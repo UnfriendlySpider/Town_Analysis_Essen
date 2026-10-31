@@ -1,0 +1,15 @@
+# Umgebung
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.coverage
+
+# Daten bleiben lokal (docs/entscheidungen.md, E-002)
+data/
+data_test/
+*.part
+
+# Alte Ausgaben aus dem ersten Durchstich
+out/

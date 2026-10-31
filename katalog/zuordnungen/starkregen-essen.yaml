@@ -1,0 +1,23 @@
+# Starkregengefahrenkarte Essen (Stadt Essen): Bedeutung von gridcode in Ueberflutung_Kategorien.shp.
+#
+# Jede Fläche trägt die Klasse der Einstautiefe zweimal: als Zahl (gridcode) und als Text (Einstautie).
+# Die Analyse prüft, dass beide zusammenpassen, und bricht sonst ab (E-009).
+
+datensatz: starkregen-essen
+geprueft: true
+quelle: >-
+  Beschreibung im Portal (DKAN package_show starkregenkarte): „Unterteilt sind die Einstautiefen in drei Klassen
+  (0 - < 0,05 m (weiß) / 0,05 m - < 0,25 m (hellblau) / >= 0,25 m (dunkelblau))“, 100-jährliches Ereignis, ohne
+  Kanalisation; Textfeld Einstautie in der Datei selbst
+vermerk: >-
+  2026-10-10: Kreuztabelle gridcode × Einstautie über alle 548.396 Flächen ohne Abweichung (1 = „0 - <0,05“,
+  2 = „0,05 - <0,25“, 3 = „>= 0,25“). Klasse 1 deckt auch die Flächen ohne nennenswerten Einstau ab; zusammen
+  bedecken die drei Klassen 20.036 ha. Datei erstellt 02.09.2022.
+
+feld: gridcode
+textfeld: Einstautie
+flaechenfeld: Shape_Area   # Fläche in m² (EPSG:4647), nur für die Abdeckung der Karte
+klassen:
+  1: {text: "0 - <0,05", titel: "unter 5 cm"}
+  2: {text: "0,05 - <0,25", titel: "5 bis unter 25 cm"}
+  3: {text: ">= 0,25", titel: "25 cm und mehr"}

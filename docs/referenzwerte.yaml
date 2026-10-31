@@ -1,0 +1,110 @@
+# Referenzwerte für den Ergebnis-Wächter (uv run essen pruefen-ergebnisse).
+# Stadtweite Kennzahl je Analyse mit Standard-Einstellungen, gerechnet mit echten Daten.
+# Neu festschreiben nur bewusst: uv run essen pruefen-ergebnisse --festschreiben [ID …]
+analysen:
+  betroffenheit:
+    datum: '2026-10-11'
+    kennzahl_stadt: 9.399
+    parameter: {}
+    testdaten: false
+    text: Stadtweit sind 9,4 % der Baublockfläche sensitiv und zugleich hitzebelastet (dringender Handlungsbedarf).
+  gruenanteil:
+    datum: '2026-10-11'
+    kennzahl_stadt: 63.726
+    parameter: {}
+    testdaten: false
+    text: Stadtweit sind 64 % der Fläche mit Vegetation bedeckt, 27 % mit Bäumen.
+  haushalte:
+    datum: '2026-10-11'
+    kennzahl_stadt: 18.32
+    parameter: {}
+    testdaten: false
+    text: Ende 2025 lebten in Essen 588.765 Menschen in 313.736 Privathaushalten; in 18 % der Haushalte leben Kinder, 51 %
+      sind Einpersonenhaushalte.
+  hitze-nacht:
+    datum: '2026-10-11'
+    kennzahl_stadt: 57.006
+    parameter: {}
+    testdaten: false
+    text: Stadtweit liegen 57 % der bebauten Fläche nachts über 20 °C (extremer Sommertag).
+  hitze-tag:
+    datum: '2026-10-11'
+    kennzahl_stadt: 43.027
+    parameter: {}
+    testdaten: false
+    text: Stadtweit liegen 43 % der Fläche um 14 Uhr über 41 °C PET (extremer Sommertag).
+  hitzetage-raster:
+    datum: '2026-10-11'
+    kennzahl_stadt: 10.61
+    parameter: {}
+    testdaten: false
+    text: 'Heiße Tage pro Jahr in Essen (Modellwert): 1961 bis 1990 im Mittel 4,3, 2016 bis 2025 im Mittel 10,6.'
+  hitzetage-station:
+    datum: '2026-10-11'
+    kennzahl_stadt: 9.2
+    parameter: {}
+    testdaten: false
+    text: 'Heiße Tage pro Jahr: 1991 bis 2020 im Mittel 6,7, 2016 bis 2025 im Mittel 9,2.'
+  jungbaeume:
+    datum: '2026-10-11'
+    kennzahl_stadt: 63.281
+    parameter: {}
+    testdaten: false
+    text: Stadtweit stehen 63 von der Stadt seit 2008 gepflanzte Jungbäume je km² (13.306 Bäume).
+  klimatope:
+    datum: '2026-10-12'
+    kennzahl_stadt: 8.897
+    parameter: {}
+    testdaten: false
+    text: Stadtweit gehören 8,9 % der Fläche zu Klimatopen dichter Bebauung (Stadt-, Innenstadt- und dichtes Gewerbeklima),
+      46,9 % zu Grün-, Wald- und Wasserklimatopen.
+  kuehlorte:
+    datum: '2026-10-11'
+    kennzahl_stadt: 43.004
+    parameter: {}
+    testdaten: false
+    text: Stadtweit liegen 43,0 % der Fläche höchstens 300 m Luftlinie von einem kühlen Ort entfernt (547 Orte).
+  laerm:
+    datum: '2026-10-11'
+    kennzahl_stadt: 18.415
+    parameter: {}
+    testdaten: false
+    text: Stadtweit liegen 18,4 % der Fläche nachts über 55 dB(A), durch mindestens eine Quelle.
+  luft-station:
+    datum: '2026-10-11'
+    kennzahl_stadt: 34.0
+    parameter: {}
+    testdaten: false
+    text: 'Stickstoffdioxid (NO₂) 2025: höchstes Jahresmittel 34 µg/m³ (Essen Kruppstraße 117 (DENW399)). Grenzwert 40, ab
+      2030 20, WHO-Richtwert 10 µg/m³.'
+  mehrfachbelastung:
+    datum: '2026-10-12'
+    kennzahl_stadt: 8.0
+    parameter: {}
+    testdaten: false
+    text: 8 von 50 Stadtteilen liegen in mindestens zwei von 3 Themen im obersten Fünftel, 0 in allen.
+  planungshinweise:
+    datum: '2026-10-12'
+    kennzahl_stadt: 46.502
+    parameter: {}
+    testdaten: false
+    text: Stadtweit haben 46,5 % der bebauten Fläche dringenden Handlungsbedarf wegen Hitze (Planungshinweiskarte, Modell).
+  starkregen:
+    datum: '2026-10-12'
+    kennzahl_stadt: 2.951
+    parameter: {}
+    testdaten: false
+    text: Stadtweit stehen nach einem 100-jährlichen Starkregen 3,0 % der Landfläche (ohne Gewässer) 25 cm oder tiefer unter
+      Wasser (Modell ohne Kanalisation).
+  umweltzone:
+    datum: '2026-10-11'
+    kennzahl_stadt: 76.99
+    parameter: {}
+    testdaten: false
+    text: Stadtweit liegen 77,0 % der Fläche in der Umweltzone; 21 Stadtteile liegen ganz darin.
+  versiegelung:
+    datum: '2026-10-11'
+    kennzahl_stadt: 36.469
+    parameter: {}
+    testdaten: false
+    text: Stadtweit sind 36 % der Fläche versiegelt.

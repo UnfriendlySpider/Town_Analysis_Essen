@@ -1,0 +1,21 @@
+# Klimaanalyse NRW 2026, Klimaanalysekarte Tag: welche Datei, welche Größe, welche Klassen.
+#
+# Das ZIP enthält zwei Raster (float32, Fehlwert -999, 25 m): PL_KY_TAG_TYP und PL_KY_TAG_EXT,
+# die physiologisch äquivalente Temperatur (PET) um 14 Uhr MEZ in °C, flächendeckend (Wirk- und
+# Ausgleichsraum werden am Tag nicht getrennt). Klassen nach VDI 3787 Blatt 2 (Methodik Karte Tag, Tabelle 1):
+#   >18–23 kein thermischer Stress | >23–29 leichte | >29–35 moderate | >35–41 starke | >41 °C extrem starke Wärmebelastung
+
+datensatz: klimaanalyse-tag-raster
+lesart: temperatur   # PET in °C
+band: 1
+dateien:
+  extrem: PL_KY_TAG_EXT.tif
+  typisch: PL_KY_TAG_TYP.tif
+geprueft: true
+quelle: >-
+  Klimaanalyse_meta.zip: Methodik_Planung_Klimaanalyse_Karte_Tag.pdf, Tabelle 1 (VDI 3787 Blatt 2) und Abschnitt
+  „Datenbasis und Kartenerstellung“ (PET, 14 Uhr MEZ, 25 m); Read_Me_Nomenklatur_open_geodata_Klimaatlas.pdf
+  (PL_KY_TAG_TYP/EXT: Thermische Belastung – PET, Einheit °C)
+vermerk: >-
+  2026-10-10: Dateien und Wertebereich inspiziert. Im Stadtgebiet Essen 336.429 von 336.430 Zellen mit Wert,
+  TYP 19,2–43,5 °C, EXT 22,4–47,4 °C; Anteil über 41 °C: TYP 4,3 %, EXT 43,0 %.

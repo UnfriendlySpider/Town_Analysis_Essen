@@ -1,0 +1,2171 @@
+# Datensätze: einzelne Daten, die das Projekt laden, ansehen oder auswerten kann.
+#
+# Jeder Eintrag verweist über `quelle` auf einen Anbieter in quellen.yaml und über `lizenz`
+# auf lizenzen.yaml. `download.art` bestimmt, ob die App einen Knopf zum Laden zeigt:
+#   datei        eine Datei unter fester Adresse
+#   verzeichnis  eine Datei aus einem Download-Ordner, gefunden über `muster` (index.json oder Linkliste)
+#   wfs          Objekte eines WFS für das Stadtgebiet (braucht `typname`)
+#   api          eine JSON-Abfrage
+#   manuell      von Hand laden, danach mit `uv run essen einlesen <id> <datei>` übernehmen
+#   keiner       nichts zu laden, nur ein Kartendienst zum Ansehen
+#
+# `status`: geprueft (Adresse bestätigt), ungeprueft (eingetragen, noch nicht bestätigt),
+#           manuell (kein automatischer Download), dienst (nur Kartendienst).
+#
+# Aufbau und Felder: docs/katalog.md. Nach Änderungen: uv run essen katalog --pruefen
+
+datensaetze:
+
+# ------------------------------------------------------------------ Grundlagen und Grenzen
+
+- id: stadtteile
+  titel: Stadtteilgrenzen Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen
+  themen: [geo]
+  beschreibung: Grenzen der 50 Stadtteile als Flächen in WGS84. Bezug für alle Auswertungen je Stadtteil.
+  format: GeoJSON
+  raumbezug: Stadt Essen, 50 Stadtteile
+  stand: laut Portal
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/verwaltungsgrenzen-der-stadt-essen
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Stadtteile_WGS84.geojson
+    datei: Stadtteile_WGS84.geojson
+  felder:
+    name: STADTTEILE
+    nummer: STADTT
+    bezirk: STADTBEZ
+  status: geprueft
+  geprueft: "2026-10-10: geladen, 50 Flächen, 210,27 km²; STADTT mit der Liste des Amts für Statistik (Bevoelkerungszahlen.pdf, Stand 30.06.2026) abgeglichen, 50 von 50 gleich"
+  analysen: [hitze-nacht]
+  hinweise:
+    - "Felder: STADTT ist die amtliche Stadtteilnummer 1 bis 50, STADTBEZ der Stadtbezirk 1 bis 9, STAT_NR = STADTBEZ × 100 + STADTT, LDS ein 13-stelliger Schlüssel. FID (0–49) und OBJECTID (1–50) sind technische Kennungen und nicht die Stadtteilnummer (FID stimmt nur in 1 von 50 Fällen)."
+    - "Abgleich der Nummern: https://media.essen.de/media/wwwessende/aemter/12/Bevoelkerungszahlen.pdf (Stadt Essen, Amt für Statistik, Stadtforschung und Wahlen)."
+    - "Lizenz bestätigt 2026-10-10 auf der Datensatzseite „Verwaltungsgrenzen der Stadt Essen“ (Feld Lizenz: „Datenlizenz Deutschland Namensnennung 2.0“, angepasst 2024-07-02, Kontakt opendata@essen.de). Dort auch Stadtgrenze und Stadtbezirke als GeoJSON und Shape-ZIP."
+  erklaerung:
+    herkunft: >-
+      Die Stadt Essen veröffentlicht die Grenzen ihrer Stadtteile auf ihrem Open-Data-Portal als Teil der
+      Verwaltungsgrenzen. Es sind amtliche Grenzen aus der Verwaltung, keine Messung. Den Stand nennt das Portal
+      selbst; die Nummern der Stadtteile wurden im Oktober 2026 mit einer Liste des städtischen Amts für Statistik
+      abgeglichen und stimmen in allen 50 Fällen überein.
+    inhalt: >-
+      Der Datensatz enthält 50 Flächen, eine für jeden Stadtteil, zusammen rund 210 Quadratkilometer. Zu jeder
+      Fläche gehören der Name des Stadtteils, seine amtliche Nummer von 1 bis 50 und die Nummer des Stadtbezirks, zu
+      dem er gehört. Daneben gibt es technische Kennungen, die nichts mit der Stadtteilnummer zu tun haben.
+    nutzen: >-
+      Die Stadtteile sind der gemeinsame Bezug fast aller Auswertungen dieser App. Jede Kennzahl je Stadtteil, etwa
+      bei Hitze in der Nacht, Grün, Lärm, Starkregen, Versiegelter Boden, Neue Bäume oder Haushalte, wird auf diese
+      Flächen verteilt. Auf der Karte können Sie die Grenzen mit Namen einblenden.
+    lesen: >-
+      Die Grenzen sind Verwaltungsgrenzen und sagen nichts darüber aus, wie ein Viertel im Alltag wahrgenommen wird.
+      Die Stadtteile sind sehr unterschiedlich groß, und alle Anteile in der App beziehen sich auf die ganze Fläche
+      eines Stadtteils, auch auf Wald und Wasser. Ein Flächenanteil ist deshalb nie dasselbe wie ein Anteil der dort
+      lebenden Menschen. Bei einer Weitergabe muss die Stadt Essen als Quelle genannt werden.
+
+- id: stadtbezirke
+  titel: Stadtbezirksgrenzen Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen
+  themen: [geo]
+  beschreibung: Grenzen der neun Stadtbezirke. Teil der Verwaltungsgrenzen auf dem Open-Data-Portal.
+  format: GeoJSON (WGS84)
+  raumbezug: Stadt Essen, 9 Stadtbezirke
+  stand: laut Portal
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/verwaltungsgrenzen-der-stadt-essen
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Stadtbezirke_WGS84.geojson
+    groesse_mb: 3.7
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Stadtbezirke_WGS84.geojson, 3.7 MB) und inspiziert: 9 Flächen in EPSG:4326"
+  hinweise:
+    - "2026-10-10: Ressource des Datensatzes „Verwaltungsgrenzen der Stadt Essen“, HTTP 200, application/geo+json, 3.734.135 B. Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0."
+  erklaerung:
+    herkunft: >-
+      Die Grenzen der Stadtbezirke stammen ebenfalls von der Stadt Essen und gehören zu den Verwaltungsgrenzen auf
+      ihrem Open-Data-Portal. Es sind amtliche Grenzen aus der Verwaltung. Den Stand gibt das Portal an; im Katalog
+      dieser App ist kein eigenes Datum vermerkt.
+    inhalt: >-
+      Der Datensatz enthält neun Flächen, eine für jeden Stadtbezirk. Jeder Bezirk fasst mehrere Stadtteile
+      zusammen. Welche weiteren Eigenschaften zu den Flächen gehören, ist im Katalog nicht beschrieben.
+    nutzen: >-
+      Mit den Bezirken lassen sich Ergebnisse gröber zusammenfassen oder ein Stadtteil mit seinem Bezirk
+      vergleichen. Die Werte je Bezirk auf den Seiten „Mein Stadtteil“ und „Themen“ rechnet die App aus den
+      Stadtteilen und deren Bezirksnummer; diese Grenzen braucht sie dafür nicht.
+    lesen: >-
+      Wie bei den Stadtteilen handelt es sich um Verwaltungsgrenzen. Ein Bezirk ist eine große, gemischte Fläche, in
+      der sich sehr unterschiedliche Stadtteile verbergen können. Bei einer Weitergabe muss die Stadt Essen als
+      Quelle genannt werden.
+
+- id: hauskoordinaten
+  titel: Amtliche Hauskoordinaten Essen
+  quelle: essen-geo
+  bereitsteller: Stadt Essen, Amt für Geoinformation, Vermessung und Kataster
+  themen: [geo]
+  beschreibung: Adresspunkte aller Gebäude. Gut, um Adressen Stadtteilen zuzuordnen.
+  format: WFS (GML, EPSG:25832 auf Anfrage), GeoJSON (WGS84, Stand 01.04.2024)
+  raumbezug: Stadt Essen, Adresspunkte
+  stand: laut Portal
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/amtliche-hauskoordinaten-essen
+  download:
+    art: wfs
+    url: https://geo.essen.de/arcgis/services/essen/Amtliche_Hauskoordinaten/MapServer/WFSServer
+    typname: Amtliche_Hauskoordinaten:Hauskoordinaten
+  status: geprueft
+  geprueft: "2026-10-10: geladen (hauskoordinaten.gml, 93.1 MB) und inspiziert: GML, 103.127 Punkte in der Box um Essen (enthält Randbereiche der Nachbarstädte)"
+  hinweise:
+    - "2026-10-10: WFS-Ressource des Datensatzes; GetCapabilities nennt Amtliche_Hauskoordinaten:Hauskoordinaten. Ausgabe nur GML (format weglassen). Laut Recherche-Agent rund 93.400 Objekte im Stadtgebiet, mit EPSG:25832 abgefragt ohne Probleme mit dem Koordinatensystem. Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0."
+    - "Das GeoJSON (Hauskoordinaten_010424.geojson, 59 MB) ist Stand 01.04.2024; der WFS ist aktueller."
+  erklaerung:
+    herkunft: >-
+      Die amtlichen Hauskoordinaten veröffentlicht das Amt für Geoinformation, Vermessung und Kataster der Stadt
+      Essen. Sie stammen aus dem amtlichen Vermessungswesen, also aus der Verwaltung. Die App holt sie über einen
+      Kartendienst, der aktueller ist als die ebenfalls angebotene Datei mit dem Stand 1. April 2024.
+    inhalt: >-
+      Der Datensatz besteht aus Punkten, je einer für eine Gebäudeadresse. Beim Laden kamen rund 103.000 Punkte
+      zusammen, weil das abgefragte Rechteck auch Randbereiche der Nachbarstädte enthält. Welche Angaben genau zu
+      jedem Punkt gehören, ist im Katalog nicht beschrieben.
+    nutzen: >-
+      Mit den Hauskoordinaten lassen sich Adressen einem Stadtteil zuordnen oder Gebäude zählen. Die App lädt den
+      Datensatz, nutzt ihn aber derzeit in keinem Thema.
+    lesen: >-
+      Ein Punkt steht für eine Adresse, nicht für eine Wohnung oder eine bestimmte Zahl von Menschen. Für
+      Auswertungen über Essen müssen die Punkte aus den Nachbarstädten erst herausgefiltert werden. Bei einer
+      Weitergabe muss die Stadt Essen als Quelle genannt werden.
+
+- id: basemap-de
+  titel: basemap.de Web Raster grau
+  quelle: bkg
+  bereitsteller: GeoBasis-DE / BKG
+  themen: [geo]
+  beschreibung: Amtliche Hintergrundkarte für Deutschland in Grau. Wird in der App und in exportierten Karten direkt vom BKG geladen.
+  format: Kartenkacheln (WMTS)
+  raumbezug: Deutschland
+  stand: laufend
+  lizenz: cc-by-4.0
+  namensnennung: "© GeoBasis-DE / BKG ({jahr}) CC BY 4.0"
+  seite: https://basemap.de/
+  download:
+    art: keiner
+  dienste:
+    - art: xyz
+      titel: basemap.de grau
+      url: https://sgx.geodatenzentrum.de/wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_grau/default/GLOBAL_WEBMERCATOR/{z}/{y}/{x}.png
+  status: dienst
+  hinweise:
+    - "2026-10-10: Kacheln „grau“ antworten (HTTP 200, image/png). Lizenz CC BY 4.0 mit Quellenvermerk „© GeoBasis-DE / BKG (Jahr des letzten Datenbezugs) CC BY 4.0“ (WMTS-Capabilities, Nutzungsbedingungen-PDF)."
+  erklaerung:
+    herkunft: >-
+      Die graue Hintergrundkarte kommt vom Bundesamt für Kartographie und Geodäsie und beruht auf den amtlichen
+      Geodaten der Länder. Sie wird laufend gepflegt. Die App lädt sie nicht herunter, sondern ruft die Kartenbilder
+      beim Anzeigen direkt beim Bundesamt ab.
+    inhalt: >-
+      Der Dienst liefert fertige Kartenbilder für ganz Deutschland in Grautönen. Es sind Bilder zum Ansehen, keine
+      Daten mit Zahlen oder Eigenschaften.
+    nutzen: >-
+      Die Karte liegt unter allen Karten der App und unter den exportierten Kartenseiten, damit Sie sich in der
+      Stadt zurechtfinden. Die grauen Töne lassen die farbigen Kennzahlen gut hervortreten.
+    lesen: >-
+      Die Hintergrundkarte dient nur der Orientierung und fließt in keine Rechnung ein. Ohne Internetverbindung
+      bleibt der Hintergrund leer, die Kennzahlen funktionieren trotzdem. Bei einer Weitergabe ist der Vermerk des
+      Bundesamts mit dem Jahr des Abrufs zu nennen.
+
+- id: gebaeude-3d-nrw
+  titel: 3D-Gebäudemodelle NRW (LoD1, LoD2)
+  quelle: geobasis
+  bereitsteller: Bezirksregierung Köln, Geobasis NRW
+  themen: [geo, energie]
+  beschreibung: Gebäude mit Höhe und Dachform. Grundlage für Gebäudebestand, Bauhöhen und Solarpotenzial.
+  format: OGC API Features, CityGML, 3D Tiles
+  raumbezug: NRW, Einzelgebäude
+  stand: Laserscan 2019 bis 2024
+  lizenz: dl-de-zero-2.0
+  seite: https://www.bezreg-koeln.nrw.de/geobasis-nrw/produkte-und-dienste/3d-gebaeudemodelle
+  download:
+    art: manuell
+    hinweis: Über die OGC API Features (https://ogc-api.nrw.de/3dg/v1) für das Stadtgebiet abfragen. Ein automatischer Abruf ist noch nicht eingebaut.
+  status: manuell
+  hinweise:
+    - "2026-10-10: Download-Ordner mit index.json je LoD (z. B. https://www.opengeodata.nrw.de/produkte/geobasis/3dg/lod2_gml/lod2_gml/), 1-km-Kacheln LoD2_32_<E>_<N>_1_NW.gml; um Essen rund 700 Kacheln, LoD1 etwa 5 GB, LoD2 etwa 13 GB. Die Ladeart verzeichnis nimmt nur eine Datei, deshalb weiter manuell."
+    - "OGC API https://ogc-api.nrw.de/3dg/v1/collections/building/items liefert CityJSON (kein GeoJSON); bbox mit kodierten Kommas (%2C). Lizenzlink der Collection: DL-DE Zero 2.0."
+  erklaerung:
+    herkunft: >-
+      Die 3D-Gebäudemodelle erstellt Geobasis NRW bei der Bezirksregierung Köln für ganz Nordrhein-Westfalen.
+      Grundlage sind Laserscan-Befliegungen aus den Jahren 2019 bis 2024. Wie oft die Modelle erneuert werden, ist
+      nicht angegeben.
+    inhalt: >-
+      Der Datensatz beschreibt einzelne Gebäude mit ihrer Höhe, in der genaueren von zwei Detailstufen auch mit der
+      Dachform. Die Daten sind in Kacheln von einem Kilometer Seitenlänge aufgeteilt; für Essen sind das rund 700
+      Kacheln und je nach Detailstufe etwa 5 bis 13 Gigabyte.
+    nutzen: >-
+      Mit den Gebäudemodellen kann man den Gebäudebestand, Bauhöhen oder das Potenzial für Solaranlagen untersuchen.
+      Die App nutzt den Datensatz derzeit in keinem Thema.
+    lesen: >-
+      Die App lädt diese Daten nicht automatisch, weil sie sehr groß und auf viele Dateien verteilt sind; Sie
+      müssten sie von Hand holen. Die Gebäude zeigen den Stand der jeweiligen Befliegung, neuere Bauten können
+      fehlen. Die Daten dürfen ohne Bedingungen genutzt werden.
+
+- id: landbedeckung-nrw
+  titel: Landbedeckung NRW
+  quelle: geobasis
+  bereitsteller: Land NRW, Geobasis NRW
+  themen: [gruen, klima, geo]
+  beschreibung: "15 Klassen der Bodenbedeckung, unter anderem Laub- und Nadelbäume, Gras, Hochbau, Tiefbau und Wasser."
+  format: GeoPackage
+  raumbezug: NRW, Lagegenauigkeit 1 bis 2 m
+  stand: jährlich, Stand 01.01.2024
+  lizenz: dl-de-by-2.0
+  namensnennung: "Enthält modifizierte Copernicus Sentinel-2 Daten [2023], verarbeitet durch Geobasis NRW; dl-de/by-2-0 (www.govdata.de/dl-de/by-2-0); https://www.wms.nrw.de/geobasis/wms_nw_landbedeckung"
+  seite: https://www.opengeodata.nrw.de/produkte/geobasis/lusat/akt/lb_nrw/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/geobasis/lusat/akt/lb_nrw/
+    muster: "lb_nrw_05100000_*_EPSG25832_GeoPackage.zip"   # Regierungsbezirk Düsseldorf, darin Essen
+    groesse_mb: 849.5
+  dienste:
+    - art: wms
+      titel: WMS Landbedeckung NRW
+      url: https://www.wms.nrw.de/geobasis/wms_nw_landbedeckung
+  status: geprueft
+  geprueft: "2026-10-10: geladen (lb_nrw_05100000_Düsseldorf_EPSG25832_GeoPackage.zip, 849,5 MB; entpackt 7,4 GB) und inspiziert; Codes mit den Stildateien belegt (katalog/zuordnungen/landbedeckung-nrw.yaml)"
+  analysen: [gruenanteil]
+  hinweise:
+    - "Laut index.json (2026-10-10) je Regierungsbezirk ein GeoPackage (Arnsberg 1,08 GB, Detmold 734 MB, Düsseldorf 850 MB, Köln 999 MB, Münster 793 MB) und lb_nrw_metadata.zip (Kachel-Aufnahmedaten). Essen liegt im Regierungsbezirk Düsseldorf. Laden über 500 MB nur nach Rückfrage."
+    - "Lizenz bestätigt 2026-10-10 in den WMS-Capabilities (Fees): „Die Daten der Landbedeckung können unter der Datenlizenz Deutschland – Namensnennung – Version 2.0 genutzt werden.“ open.nrw nennt nur „Es gelten keine Zugriffsbeschränkungen“."
+    - "Pflichtvermerk laut WMS: „Enthält modifizierte Copernicus Sentinel-2 Daten [2023], verarbeitet durch Geobasis NRW; dl-de/by-2-0 (www.govdata.de/dl-de/by-2-0); https://www.wms.nrw.de/geobasis/wms_nw_landbedeckung.“"
+    - "Legende des WMS (nw_landbedeckung): Hochbau, Tiefbau, Festgestein, Lockermaterial, Krautige Vegetation (Gras; Röhricht, Schilf; Getreide, Staudengewächse, Farne), Holzige Vegetation (Bäume Laub; Bäume Nadel; Gehölz; Büsche, Sträucher), Meer, Binnengewässer (fließend; stehend), Eis. Festgestein, Meer und Eis kommen in NRW nicht vor."
+    - "Inhalt: Duesseldorf.gpkg mit 6 Layern (lb_hochbau, lb_tiefbau, lb_krautigevegetation, lb_holzigevegetation, lb_lockermaterial, lb_binnengewaesser) und QGIS-Stildateien je Layer. In Essen decken die Layer 21.024 von 21.027 ha ab."
+  erklaerung:
+    herkunft: >-
+      Die Landbedeckung NRW stellt Geobasis NRW bereit. Sie entsteht aus Satellitenbildern des europäischen
+      Programms Copernicus (Sentinel-2, Aufnahmen aus 2023), ergänzt um Luftbilder, Höhenmodelle und amtliche
+      Geodaten. Sie wird jährlich erneuert; der verwendete Stand ist der 1. Januar 2024, die Bilder stammen je nach
+      Gebiet aus 2022 oder 2023.
+    inhalt: >-
+      Der Datensatz teilt die Landschaft lückenlos in Flächen ein, jede mit genau einer Art der Bodenbedeckung.
+      Unterschieden werden unter anderem Laub- und Nadelbäume, Gehölze und Büsche, Gras, Getreide und Stauden,
+      Hochbau, Tiefbau, offener Boden und Wasser. In Essen decken die Flächen fast das ganze Stadtgebiet ab.
+    nutzen: >-
+      Die App berechnet daraus im Thema „Grün“, welcher Anteil der Fläche eines Stadtteils mit Pflanzen bewachsen
+      ist und welcher mit Bäumen. Im Thema „Starkregen“ zieht die App mit ihren Gewässerflächen Bäche, Teiche, Ruhr und Baldeneysee ab, damit
+      nur Wasser an Land zählt. Man kann damit auch sehen, wie viel Fläche bebaut oder mit Wasser bedeckt ist.
+    lesen: >-
+      Bewachsen ist nicht dasselbe wie öffentliches Grün: Äcker, private Gärten, Friedhöfe und Bahnböschungen zählen
+      mit. Die Satellitenbilder haben eine Auflösung von 10 Metern, deshalb sind einzelne Straßenbäume, Vorgärten
+      und schmale Grünstreifen nur teilweise erfasst. Ein grüner Anteil beschreibt Fläche, nicht wie viele Menschen
+      in der Nähe von Grün wohnen. Bei einer Weitergabe ist ein Pflichtvermerk zu Geobasis NRW und den
+      Copernicus-Daten zu nennen.
+
+# ------------------------------------------------------------------ Klima und Hitze
+
+- id: klimaanalyse-nacht-raster
+  titel: Klimaanalyse NRW 2026 – Klimaanalysekarte Nacht (Raster)
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: >-
+    Nachtsituation um 4 Uhr MEZ in einer sommerlichen Strahlungsnacht, berechnet mit dem Modell FITNAH-3D.
+    Für bebaute Flächen gibt es acht Klassen der Lufttemperatur, für Grün- und Freiflächen die Kaltluft.
+  format: GeoTIFF im ZIP
+  raumbezug: NRW, 25-m-Raster, EPSG:25832
+  stand: 2026, Datei vom 09.04.2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/
+    muster: "*Karte-Nacht*TIFF*.zip"
+    groesse_mb: 363.5
+  dienste:
+    - art: wms
+      titel: WMS Klimaanpassung Klimaanalyse
+      url: https://www.wms.nrw.de/umwelt/klimaanpassung_klimaanalyse
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Dateiname und Größe im index.json des Ordners); Inhalt inspiziert, Kodierung mit Methodik-PDF und WMS-Legende abgeglichen (katalog/zuordnungen/klimaanalyse-nacht-raster.yaml)"
+  analysen: [hitze-nacht]
+  begleitend: [klimaanalyse-beschreibung]
+  hinweise:
+    - "Das ZIP (14 TIFF, 383 MB entpackt) enthält kein Klassenraster, sondern stetige Werte (float32, Fehlwert -999): PL_KY_NACHT_LT_TYP/EXT = Lufttemperatur um 4 Uhr in °C nur im Wirkraum, PL_KY_NACHT_KVSD_TYP/EXT = Kaltluftvolumenstromdichte in m³/(s·m) nur im Ausgleichsraum, PL_KY_NACHT_Stroemungsrichtung_* = Strömung (2 Bänder) im Gitter 100 bis 2000 m. TYP = typischer, EXT = extremer Sommertag."
+    - Die acht Klassen entstehen aus der Temperatur nach Tabelle 1 der Methodik Karte Nacht; Zuordnung in katalog/zuordnungen/klimaanalyse-nacht-raster.yaml.
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Landesamt für Natur, Umwelt und Klima NRW (LANUK) und gehören zur Klimaanalyse NRW 2026.
+      Sie sind nicht gemessen, sondern mit einem Computermodell (FITNAH-3D) für eine Sommernacht berechnet, die
+      Fachleute „sommerliche Strahlungsnacht“ nennen. Die Datei stammt vom April 2026. Die Lizenz erlaubt jede
+      Nutzung ohne Bedingungen.
+    inhalt: >-
+      Der Datensatz ist ein Raster aus Quadraten von 25 mal 25 Metern für ganz Nordrhein-Westfalen. Für bebaute
+      Flächen steht darin die Lufttemperatur um 4 Uhr nachts in Grad Celsius, für Grün- und Freiflächen stattdessen,
+      wie viel kühle Luft dort fließt. Es gibt je eine Fassung für einen typischen und für einen extremen Sommertag.
+      Aus der Temperatur bildet die App acht Stufen von „sehr niedrig“ bis „extreme nächtliche Überwärmung“.
+    nutzen: >-
+      Mit dem Raster sehen Sie, welche Wohn- und Gewerbegebiete sich nachts kaum abkühlen. Die App nutzt es für das
+      Thema „Hitze in der Nacht“ und als einen der drei Bausteine der „Mehrfachbelastung“. Dort zeigt sie, welcher
+      Anteil der bebauten Fläche eines Stadtteils um 4 Uhr wärmer als 20 °C ist.
+    lesen: >-
+      Es sind Modellwerte für eine einzelne Sommernacht, keine Messungen und keine Zählung, wie oft solche Nächte
+      vorkommen. Die App rechnet standardmäßig mit dem extremen Sommertag, weil im typischen Szenario in Essen
+      praktisch keine Fläche über 20 °C liegt. Gezählt wird Fläche, nicht Menschen; eine Schätzung der Einwohner aus
+      dem Zensus kommt nur als Zusatz hinzu.
+
+- id: klimaanalyse-nacht-vektor
+  titel: Klimaanalyse NRW 2026 – Nachtsituation (GeoPackage)
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: >-
+    Vektordaten zur Nachtsituation: Kaltluftleitbahnen, Austausch mit Strömungsrichtung, Kaltluftproduktionsflächen
+    sowie Verkehrs- und Wasserflächen. Enthält keine Temperaturklassen der bebauten Flächen.
+  format: GeoPackage im ZIP
+  raumbezug: NRW, EPSG:25832
+  stand: 2026, Datei vom 08.04.2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/
+    muster: "*Nacht*GeoPackage*.zip"
+    groesse_mb: 62.6
+  status: geprueft
+  geprueft: "2026-10-10: geladen und inspiziert, 5 Layer, Felder mit Methodik und Nomenklatur abgeglichen"
+  analysen: [hitze-nacht]
+  begleitend: [klimaanalyse-beschreibung]
+  hinweise:
+    - "Layer laut lokalem Lauf: PL_KY_Verkehr und PL_KY_Wasser (Feld KT_R02_2), PL_KY_KL_Leitbahn (Linien), PL_KY_KL_Austausch (Punkte mit Richtung), PL_KY_KL_Produktion (Feld gridcode)."
+    - "KT_R02_2 ist der Klimatop-Code der primären Zuordnung (Methodik Klimatopkarte, Tabelle 2): -999 Straßenverkehr, -99 Bahnverkehr, 1 Gewässer. Landesweit geprüft 2026-10-10: Verkehr nur -999 (40.470) und -99 (9.449), Wasser nur 1 (21.041)."
+    - "gridcode ist in allen 138.258 Flächen von PL_KY_KL_Produktion gleich 2 und trägt keine Information. Der Layer selbst bedeutet laut Nomenklatur-PDF: Kaltluftproduktion über 26,3 m³/(m²·h). Wofür die Zahl 2 steht, ist nicht dokumentiert."
+  erklaerung:
+    herkunft: >-
+      Die Daten veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW (LANUK) als Teil der Klimaanalyse NRW
+      2026. Sie beruhen auf derselben Modellrechnung wie die Nachtkarte und beschreiben eine sommerliche
+      Strahlungsnacht. Die Datei ist vom April 2026, die Lizenz erlaubt jede Nutzung ohne Bedingungen.
+    inhalt: >-
+      Der Datensatz enthält Flächen, Linien und Punkte für ganz Nordrhein-Westfalen: Flächen, auf denen nachts kühle
+      Luft entsteht, Bahnen, entlang derer kühle Luft in die Stadt fließt, Punkte mit der Strömungsrichtung sowie
+      Verkehrs- und Wasserflächen. Temperaturen für bebaute Flächen stehen hier nicht drin. Eine Kennzahl in den
+      Flächen der Kaltluftentstehung hat überall denselben Wert und sagt nichts aus.
+    nutzen: >-
+      Mit diesen Daten erkennen Sie, woher nachts kühle Luft kommt und wohin sie fließt. Die App kann sie beim Thema
+      „Hitze in der Nacht“ als Hilfe nutzen, um bebaute Flächen von Grün- und Wasserflächen zu trennen. Als
+      eigentliche Grundlage der Kennzahl dient sonst das Raster der Nachtkarte.
+    lesen: >-
+      Auch hier handelt es sich um Modellergebnisse für eine einzelne Sommernacht, nicht um Messungen. Wenn die App
+      mit diesen Flächen den bebauten Bereich abgrenzt, ist das nur eine Näherung, und das Ergebnis weist darauf
+      hin.
+
+- id: klimaanalyse-beschreibung
+  titel: Klimaanalyse NRW 2026 – Datenbeschreibung
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: Beschreibung der Klimaanalyse-Daten, die in jedem Ordner der Klimaanalyse mitgeliefert wird. Neun PDF-Dokumente (Fachbericht 171, Methodik je Karte, Nomenklatur), keine Stildateien.
+  format: ZIP
+  raumbezug: NRW
+  stand: Datei vom 14.04.2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/
+    muster: Klimaanalyse_meta.zip
+    groesse_mb: 13.2
+  status: geprueft
+  geprueft: "2026-10-10: im index.json des Ordners unter metafiles"
+  analysen: [hitze-nacht]
+  hinweise:
+    - "Inhalt (2026-10-10): Fachbericht_171, Methodik_Planung_Klimaanalyse_* (Betroffenheitsanalyse, Karte_Nacht, Karte_regional, Karte_Tag, Klimatopkarte, Methodik, Planungshinweiskarte) und Read_Me_Nomenklatur_open_geodata_Klimaatlas.pdf. Klassengrenzen der Nachtkarte: Karte_Nacht, Tabelle 1. Dateinamen und Einheiten: Nomenklatur."
+    - Farben der Legenden stehen nicht im ZIP, sondern im WMS klimaanpassung_klimaanalyse (GetLegendGraphic).
+  erklaerung:
+    herkunft: >-
+      Die Beschreibung stammt vom Landesamt für Natur, Umwelt und Klima NRW (LANUK) und liegt jedem Ordner der
+      Klimaanalyse NRW 2026 bei. Die Datei ist vom April 2026. Die Lizenz erlaubt jede Nutzung ohne Bedingungen.
+    inhalt: >-
+      Es handelt sich nicht um Karten, sondern um neun PDF-Dokumente: einen Fachbericht, eine Methodenbeschreibung
+      zu jeder Karte und eine Erklärung der Datei- und Feldnamen. Darin stehen zum Beispiel die Temperaturgrenzen
+      der acht Stufen der Nachtkarte und die Einheiten der Werte. Die Farben der Kartenlegenden sind nicht
+      enthalten.
+    nutzen: >-
+      Die Dokumente sind der Beleg dafür, wie die Zahlen in den Karten zu verstehen sind. Die App braucht sie nicht
+      zum Rechnen, sondern als Nachweis für die Themen „Hitze in der Nacht“ und „Hitze am Tag“. Wer genauer wissen
+      will, wie die Klimaanalyse entstanden ist, findet es hier.
+    lesen: >-
+      Die Texte erklären die Methode des Landesamts, die App hat sie nur für die Zuordnung der Stufen ausgewertet.
+      Für Fragen zu einzelnen Karten lesen Sie am besten das passende Methodik-Dokument.
+
+- id: klimaanalyse-tag
+  titel: Klimaanalyse NRW 2026 – Tagsituation
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: Vektordaten zur Tagsituation. Enthält nur Verkehrs- und Wasserflächen; die thermische Belastung steht im Raster (klimaanalyse-tag-raster).
+  format: GeoPackage im ZIP
+  raumbezug: NRW, EPSG:25832
+  stand: 2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-tag/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-tag/
+    muster: "Klimaanalyse-Tag_*_GeoPackage.zip"
+    groesse_mb: 32.5
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Klimaanalyse-Tag_2026_EPSG25832_GeoPackage.zip, 32,5 MB laut index.json) und inspiziert"
+  begleitend: [klimaanalyse-beschreibung]
+  hinweise:
+    - "Zwei Layer wie im GeoPackage der Nacht: PL_KY_Verkehr und PL_KY_Wasser (Feld KT_R02_2, Klimatop-Code). Keine PET-Werte."
+    - "Lizenz auf open.nrw bestätigt (2026-10-10): „Gruppenlayer: Klimaanalyse 2026 - Klimaanalysekarte (tags)“, Datenlizenz Deutschland – Zero – Version 2.0, https://open.nrw/dataset/676b9952-ccd5-4d2d-9ca4-3ca06e0cb511"
+  erklaerung:
+    herkunft: >-
+      Die Daten veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW (LANUK) als Teil der Klimaanalyse NRW
+      2026. Die Lizenz erlaubt jede Nutzung ohne Bedingungen. Wie oft die Daten erneuert werden, ist nicht
+      angegeben.
+    inhalt: >-
+      Der Datensatz enthält für ganz Nordrhein-Westfalen nur zwei Arten von Flächen: Verkehrsflächen und
+      Wasserflächen. Werte zur Hitze am Tag stehen hier nicht drin, sondern im Raster der Tageskarte.
+    nutzen: >-
+      Die Flächen können helfen, Straßen, Bahnlinien und Gewässer auf einer Karte abzugrenzen. Ein Thema der App
+      rechnet derzeit nicht mit diesem Datensatz.
+    lesen: >-
+      Wer die Hitze am Tag sucht, ist hier falsch; dafür gibt es das Raster der Tageskarte. Die Flächen gehören zum
+      Modell der Klimaanalyse und sind keine amtliche Straßen- oder Gewässerkarte.
+
+- id: klimaanalyse-tag-raster
+  titel: Klimaanalyse NRW 2026 – Klimaanalysekarte Tag (Raster)
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: >-
+    Thermische Belastung am Nachmittag als physiologisch äquivalente Temperatur (PET) in °C, für einen typischen
+    und einen extremen Sommertag, berechnet mit FITNAH-3D.
+  format: GeoTIFF im ZIP
+  raumbezug: NRW, EPSG:25832
+  stand: 2026, Datei vom 09.04.2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-tag/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-tag/
+    muster: "Klimaanalyse-Karte-Tag_*_TIFF.zip"
+    groesse_mb: 246.0
+  dienste:
+    - art: wms
+      titel: WMS Klimaanpassung Klimaanalyse
+      url: https://www.wms.nrw.de/umwelt/klimaanpassung_klimaanalyse
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Klimaanalyse-Karte-Tag_2026_EPSG25832_TIFF.zip, 246,0 MB) und inspiziert"
+  analysen: [hitze-tag]
+  begleitend: [klimaanalyse-beschreibung]
+  hinweise:
+    - "Inhalt: PL_KY_TAG_EXT.tif und PL_KY_TAG_TYP.tif, float32, 25 m, Fehlwert -999, ohne Farbtabelle. Im Stadtgebiet EXT 22,4–47,4 °C (Median 40,3), TYP 19,2–43,5 °C (Median 35,2). Laut Methodik Karte Tag: PET um 14 Uhr MEZ, Klassen nach VDI 3787 Blatt 2 (Tabelle 1: >23–29 leichte, >29–35 moderate, >35–41 starke, >41 °C extrem starke Wärmebelastung), keine Trennung von Wirk- und Ausgleichsraum."
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Landesamt für Natur, Umwelt und Klima NRW (LANUK) und gehören zur Klimaanalyse NRW 2026.
+      Sie sind mit einem Computermodell (FITNAH-3D) für einen sonnigen Sommertag berechnet, nicht gemessen. Die
+      Datei ist vom April 2026, die Lizenz erlaubt jede Nutzung ohne Bedingungen.
+    inhalt: >-
+      Der Datensatz ist ein Raster aus Quadraten von 25 mal 25 Metern. Jedes Quadrat zeigt die gefühlte Temperatur
+      um 14 Uhr in Grad Celsius, also wie warm es sich für einen Menschen im Freien anfühlt, wenn man Luft, Sonne,
+      Wind und Feuchte zusammennimmt. Es gibt eine Fassung für einen typischen und eine für einen extremen
+      Sommertag. In Essen reichen die Werte am extremen Tag von etwa 22 bis 47 °C.
+    nutzen: >-
+      Damit sehen Sie, wo es an einem heißen Nachmittag im Freien besonders belastend ist. Die App nutzt das Raster
+      für das Thema „Hitze am Tag“ und zeigt, welcher Anteil der Fläche eines Stadtteils über 41 °C gefühlter
+      Temperatur liegt, was als extrem starke Wärmebelastung gilt.
+    lesen: >-
+      Es sind Modellwerte für einen einzelnen Sommertag, keine Messungen und keine Zahl heißer Tage im Jahr.
+      Schatten in engen Straßen oder unter einzelnen Bäumen ist bei 25 Metern Auflösung nicht zu sehen. Gezählt wird
+      die ganze Fläche einschließlich Wald und Wiesen, nicht die Zahl der Menschen; auch offene Felder ohne Schatten
+      können sehr heiß sein.
+
+- id: klimaanalyse-klimatope
+  titel: Klimaanalyse NRW 2026 – Klimatopkarte
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: Flächen mit ähnlichem Mikroklima, zum Beispiel Innenstadt-, Stadt-, Vorstadt-, Park- und Freilandklima.
+  format: GeoPackage im ZIP
+  raumbezug: NRW
+  stand: 2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/klimatop/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/klimatop/
+    muster: "Klimaanalyse-Klimatopkarte_*_GeoPackage.zip"
+    groesse_mb: 541.0
+  analysen: [klimatope]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Klimaanalyse-Klimatopkarte_2026_EPSG25832_GeoPackage.zip, 541,0 MB) und inspiziert"
+  hinweise:
+    - "index.json (2026-10-10): Klimaanalyse-Klimatopkarte_2026_EPSG25832_GeoPackage.zip, 541,0 MB; daneben ein TIFF mit 1,3 MB. Laden über 500 MB nur nach Rückfrage."
+    - "Lizenz auf open.nrw bestätigt: „Gruppenlayer: Klimaanalyse 2026 - Klimatopkarte“, DL-DE Zero 2.0, https://open.nrw/dataset/05fbbcfe-3fd5-43bf-abff-ac7ccfdb67b3"
+    - "Inhalt: Layer PL_KY_KLIMATOP (1.165.742 Flächen in NRW) mit Textfeld Klimatoptyp, 12 Werte im Stadtgebiet (u. a. Klima innerstädtischer Grünflächen, Stadtrandklima, Vorstadtklima, Straßenverkehr, Freilandklima, Waldklima)."
+  erklaerung:
+    herkunft: >-
+      Die Karte veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW (LANUK) als Teil der Klimaanalyse NRW
+      2026. Sie ist aus der Modellrechnung der Klimaanalyse abgeleitet. Die Lizenz erlaubt jede Nutzung ohne
+      Bedingungen; wie oft die Karte erneuert wird, ist nicht angegeben.
+    inhalt: >-
+      Die Karte teilt ganz Nordrhein-Westfalen in Flächen mit ähnlichem Kleinklima ein, sogenannte Klimatope. Jede
+      Fläche hat einen Namen wie Innenstadtklima, Vorstadtklima, Stadtrandklima, Klima innerstädtischer Grünflächen,
+      Freilandklima oder Waldklima. In Essen kommen zwölf solcher Arten vor.
+    nutzen: >-
+      Die Karte gibt einen schnellen Überblick, wo es eher wie in der Innenstadt und wo eher wie auf dem Land ist.
+      Die App nutzt sie im Thema „Stadtklima (Klimatope)“: Sie zeigt je Stadtteil, wie sich die Fläche auf Grün,
+      lockere und dichte Bebauung und Verkehr verteilt.
+    lesen: >-
+      Die Klimatope sind eine Einteilung in Gruppen, keine Temperaturwerte. Sie beruhen auf einem Modell und zeigen
+      kein gemessenes Wetter. Die Datei ist mit über 500 Megabyte sehr groß, deshalb lädt die App sie nur nach
+      Rückfrage.
+
+- id: klimaanalyse-planungshinweise
+  titel: Klimaanalyse NRW 2026 – Planungshinweiskarte
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: Bewertung der Flächen in sechs Stufen (HP 1 bis 6) mit Hinweisen für Planung und Anpassung.
+  format: GeoPackage im ZIP, dazu ein kleines TIFF
+  raumbezug: NRW
+  stand: 2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/planunghinweis/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/planunghinweis/
+    muster: "Klimaanalyse-Planungshinweiskarte_*_GeoPackage.zip"
+    groesse_mb: 604.9
+  analysen: [planungshinweise]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Klimaanalyse-Planungshinweiskarte_2026_EPSG25832_GeoPackage.zip, 604,9 MB) und inspiziert"
+  hinweise:
+    - "Lizenz auf open.nrw bestätigt (2026-10-10): „Gruppenlayer: Klimaanalyse 2026 - Planungshinweiskarte“, DL-DE Zero 2.0, https://open.nrw/dataset/ce5c3a81-b009-407f-b30e-9c0bbb842009"
+    - "2026-10-10: index.json des Ordners: Klimaanalyse-Planungshinweiskarte_2026_EPSG25832_GeoPackage.zip, 604,9 MB; daneben ein TIFF mit 0,3 MB."
+    - "Inhalt (Auszug): PL_KY_KL_Leitbahn, PL_KY_KL_Austausch, PL_KY_KL_Einwirk (Feld KLenwrk), PL_KY_KL_Produktion (gridcode 2), PL_KY_Verkehr und weitere Layer. Die Bewertungsklassen der Planungshinweise vor einer Analyse im Bericht data/inspektion/klimaanalyse-planungshinweise.md und in Methodik_Planung_Klimaanalyse_Planungshinweiskarte.pdf nachlesen."
+  erklaerung:
+    herkunft: >-
+      Die Karte veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW (LANUK) als Teil der Klimaanalyse NRW
+      2026. Sie bewertet die Ergebnisse der Klimamodelle für die Planung. Die Lizenz erlaubt jede Nutzung ohne
+      Bedingungen; wie oft die Karte erneuert wird, ist nicht angegeben.
+    inhalt: >-
+      Die Karte bewertet Flächen in sechs Stufen und gibt dazu Hinweise für Planung und Anpassung an Hitze. Dazu
+      kommen Flächen und Linien zur kühlen Luft, etwa wo sie entsteht, wo sie fließt und wo sie ankommt, sowie
+      Verkehrsflächen.
+    nutzen: >-
+      Die Karte zeigt, wo das Landesamt Handlungsbedarf wegen Hitze sieht und welche Flächen für die Kühlung wichtig
+      sind. Die App nutzt sie im Thema „Handlungsbedarf bei Hitze“ (Anteil der bebauten Fläche mit dringendem
+      Handlungsbedarf); dieselbe Einstufung steckt auch in der Betroffenheitsanalyse („Hitze und empfindliche Menschen“).
+    lesen: >-
+      Die Stufen sind eine Bewertung des Landesamts auf Grundlage von Modellwerten, keine Messung. Laut Methodik des Landesamts heißen die Handlungsprioritäten 1 und 2 dringender, 3 und 4 erweiterter, 5 mäßiger
+      und 6 kein Handlungsbedarf; in Essen kommt Stufe 6 nicht vor. Die Datei ist mit rund 600 Megabyte
+      sehr groß.
+
+- id: klimaanalyse-betroffenheit
+  titel: Klimaanalyse NRW 2026 – Betroffenheitsanalyse
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima, bevoelkerung]
+  beschreibung: Wo Hitze auf empfindliche Gruppen und Einrichtungen trifft.
+  format: GeoPackage im ZIP
+  raumbezug: NRW
+  stand: 2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/betroffenheit/
+  analysen: [betroffenheit]
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/betroffenheit/
+    muster: "Klimaanalyse-Betroffenheitsanalyse_*_GeoPackage.zip"
+    groesse_mb: 2968.5
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Klimaanalyse-Betroffenheitsanalyse_2026_EPSG25832_GeoPackage.zip, 2.968,5 MB) und inspiziert"
+  hinweise:
+    - "index.json (2026-10-10): Klimaanalyse-Betroffenheitsanalyse_2026_EPSG25832_GeoPackage.zip, 2.968,5 MB. Vor dem Laden Speicherplatz prüfen und nachfragen."
+    - "Lizenz auf open.nrw bestätigt: „Gruppenlayer: Klimaanalyse 2026 - Betroffenheitsanalyse“, DL-DE Zero 2.0, https://open.nrw/dataset/1ac8ec8f-2eff-457d-9a6d-eb0f31525ba1"
+    - "Inhalt (Auszug): PL_KY_BTA_Gesamtbetrachtung_HP (senstvt 1–4 mit Text nicht/sensitiv/hoch/extrem sensitiv, Feld gemeind), PL_KY_BTA_Hochaltrigendichte und PL_KY_BTA_Kinderdichte (Baublöcke, Klassen 1–4 mit Textfeld). Bezug sind Baublöcke, nicht Personen; Methodik_Planung_Klimaanalyse_Betroffenheitsanalyse1.pdf lesen, bevor gerechnet wird."
+  erklaerung:
+    herkunft: >-
+      Die Daten veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW (LANUK) als Teil der Klimaanalyse NRW
+      2026. Sie verbinden Angaben aus dem Zensus 2022 zu Wohnblöcken mit der Hitzebewertung der
+      Planungshinweiskarte. Die Methode ist vom März 2026, die Lizenz erlaubt jede Nutzung ohne Bedingungen.
+    inhalt: >-
+      Der Datensatz enthält Wohnblöcke mit einer Einstufung in vier Stufen: nicht sensitiv, sensitiv, hoch sensitiv
+      und extrem sensitiv. Die Stufen ergeben sich daraus, wie viele sehr alte Menschen ab 80 und kleine Kinder
+      unter 6 dort je Fläche leben und wie niedrig die Miete ist. Eine eigene Ebene enthält nur die Blöcke, in denen
+      das Landesamt dringenden Handlungsbedarf wegen Hitze sieht.
+    nutzen: >-
+      Damit sehen Sie, wo Hitze auf Menschen trifft, die besonders darunter leiden. Die App nutzt den Datensatz für
+      das Thema „Hitze und empfindliche Menschen“ und zeigt, welcher Anteil der Wohnblockfläche eines Stadtteils
+      empfindlich und zugleich hitzebelastet ist.
+    lesen: >-
+      Die Stufen sind relativ innerhalb Essens: „sensitiv“ heißt „im obersten Bereich der Stadt“, nicht „über einer
+      festen Grenze“. Gezählt wird Wohnblockfläche, nicht die Zahl der Menschen, und die niedrige Miete ist nur ein
+      Ersatz für Armut. Die Hitzebelastung stammt aus einem Modell. Die Datei ist mit fast 3 Gigabyte sehr groß.
+
+- id: klimaanalyse-regionalkarte
+  titel: Klimaanalyse NRW 2026 – Regionalkarte
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [klima]
+  beschreibung: Karte regional bedeutsamer Klimafunktionen, unter anderem Kennwerte je Gemeinde (Wärmebelastung, Kaltluftversorgung), Ausgleichsräume am Tag und Kaltluft-Trajektorien.
+  format: GeoPackage im ZIP
+  raumbezug: NRW, EPSG:25832
+  stand: 2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/regionalkarte/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/regionalkarte/
+    muster: "Klimaanalyse-Regionalkarte_*_GeoPackage.zip"
+    groesse_mb: 25.7
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Klimaanalyse-Regionalkarte_2026_EPSG25832_GeoPackage.zip, 25,7 MB laut index.json) und inspiziert"
+  begleitend: [klimaanalyse-beschreibung]
+  hinweise:
+    - "9 Layer, u. a. PL_KY_REGIONAL_Belastung_Tag und _Nacht (Punkte je Gemeinde mit GN, KN und Einwohnerzahlen), PL_KY_REGIONAL_Kaltluftversorgung, PL_KY_REGIONAL_Ausgleich_Tag (Feld pet), PL_KY_REGIONAL_Trajektorien."
+    - "Essen (KN 05113000) in Belastung_Nacht: Einwohner_dringenderHandlungsbedarf 293.411, Anteil 51,4 %, Priorität laut Feld regionalplanerischeHandlungspriorität. Modellwerte des LANUK, Methodik in Methodik_Planung_Klimaanalyse_Karte_regional1.pdf."
+    - "Lizenz auf open.nrw bestätigt (2026-10-10): „Karte regional bedeutsamer Klimafunktionen“, DL-DE Zero 2.0, https://open.nrw/dataset/6e395fbe-af9f-4510-a4f5-b887928ef719"
+  erklaerung:
+    herkunft: >-
+      Die Karte veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW (LANUK) als Teil der Klimaanalyse NRW
+      2026. Ihre Werte sind Ergebnisse der Modellrechnung des Landesamts. Die Lizenz erlaubt jede Nutzung ohne
+      Bedingungen; wie oft die Karte erneuert wird, ist nicht angegeben.
+    inhalt: >-
+      Die Karte zeigt Klimafunktionen, die für die ganze Region wichtig sind. Dazu gehören Kennwerte je Gemeinde zur
+      Wärmebelastung am Tag und in der Nacht mit Einwohnerzahlen, Angaben zur Versorgung mit kühler Luft, Flächen,
+      die am Tag ausgleichend wirken, und Wege, auf denen kühle Luft fließt. Für Essen nennt die Nachtwertung rund
+      293.000 Einwohner in Gebieten mit dringendem Handlungsbedarf, das sind 51,4 Prozent.
+    nutzen: >-
+      Mit der Karte können Sie Essen mit anderen Gemeinden in Nordrhein-Westfalen vergleichen. Ein Thema der App
+      rechnet derzeit nicht mit ihr.
+    lesen: >-
+      Alle Zahlen sind Modellwerte des Landesamts, keine Messungen. Die Einwohnerzahlen in Belastungsgebieten hat
+      das Landesamt selbst berechnet; sie stammen nicht aus der App und gelten für ganze Gemeinden, nicht für
+      Stadtteile.
+
+- id: rvr-klimaanalyse
+  titel: Klimaanalyse Metropole Ruhr – Synthetische Klimafunktionskarte
+  quelle: ruhr
+  bereitsteller: Regionalverband Ruhr (RVR)
+  themen: [klima]
+  beschreibung: Regionale Klimaanalyse des RVR mit Klimatopen und Klimafunktionen für das Ruhrgebiet.
+  format: WFS
+  raumbezug: Metropole Ruhr
+  stand: laut Dienst
+  lizenz: cc-by-nc-4.0
+  seite: https://geodaten.metropoleruhr.de/klima/synth_klima_fk_v8
+  download:
+    art: manuell
+    hinweis: "Mit `uv run essen dienst rvr-klimaanalyse` die Objektarten abfragen, dann hier `art: wfs` und `typname` eintragen."
+  dienste:
+    - art: wfs
+      titel: WFS Synthetische Klimafunktionskarte
+      url: https://geodaten.metropoleruhr.de/klima/synth_klima_fk_v8
+  status: manuell
+  hinweise:
+    - Nicht kommerziell (CC BY-NC 4.0). Privat in Ordnung, vor einer Veröffentlichung klären.
+    - "2026-10-10: Objektarten des WFS: ms:Klimatope, ms:Schraffuren, ms:Linien, ms:Stationen, ms:Symbole, ms:Windfeld. Laut DescribeFeatureType nur Geometrie (geom), kein Klassenfeld; schon 2 Klimatope ergeben 4,2 MB GML. Für Analysen so nicht brauchbar, deshalb weiter manuell."
+    - "Lizenz widersprüchlich: Metadaten (CSW 1572f435-f373-4eaf-b788-dba7da7167bd, daten.geoportal.ruhr) cc-by-nc/4.0 „© Regionalverband Ruhr“; die WFS-Capabilities sagen „Die Rechte liegen bei den jeweiligen Kommunen“."
+  erklaerung:
+    herkunft: >-
+      Die Klimaanalyse stammt vom Regionalverband Ruhr (RVR) und beschreibt das Klima im ganzen Ruhrgebiet. Sie ist
+      nur als Kartendienst im Internet abrufbar. Wie aktuell sie ist, steht im Dienst selbst und ist hier nicht
+      festgehalten. Die Lizenz ist unklar: Die Beschreibung nennt eine Lizenz nur für nicht kommerzielle Zwecke, der
+      Dienst selbst sagt, die Rechte lägen bei den Kommunen.
+    inhalt: >-
+      Laut Beschreibung enthält die Karte Klimatope und Klimafunktionen für das Ruhrgebiet, also Flächen mit
+      ähnlichem Kleinklima und ihre Bedeutung. Im Dienst gibt es Flächen, Schraffuren, Linien, Stationen, Symbole
+      und ein Windfeld. Die Flächen haben aber nur eine Form und kein Feld, das sagt, zu welcher Klasse sie gehören.
+    nutzen: >-
+      Die Karte kann beim Ansehen helfen, wenn Sie Essen mit dem übrigen Ruhrgebiet vergleichen möchten. Die App
+      lädt sie nicht automatisch und rechnet nicht mit ihr, weil die Daten ohne Klassenangabe für Auswertungen nicht
+      brauchbar sind.
+    lesen: >-
+      Ohne Angabe der Klasse lassen sich aus den Flächen keine Kennzahlen bilden. Für private Zwecke ist die Nutzung
+      in Ordnung, vor einer Weitergabe oder Veröffentlichung muss die Lizenz geklärt werden.
+
+- id: dwd-klima-essen-aktuell
+  titel: DWD Tageswerte, Station Essen-Bredeney (aktuell)
+  quelle: dwd
+  bereitsteller: Deutscher Wetterdienst (DWD)
+  themen: [klima]
+  beschreibung: Tägliche Messwerte der letzten rund anderthalb Jahre, unter anderem Höchst-, Tiefst- und Mitteltemperatur und Niederschlag. Noch nicht vollständig qualitätsgeprüft.
+  format: Text (Semikolon) im ZIP
+  raumbezug: Messstation Essen-Bredeney (Stations-ID 01303)
+  stand: täglich
+  lizenz: cc-by-4.0
+  namensnennung: "Deutscher Wetterdienst (DWD), Climate Data Center, CC BY 4.0"
+  seite: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/
+  download:
+    art: verzeichnis
+    ordner: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/
+    muster: tageswerte_KL_01303_akt.zip
+  status: geprueft
+  geprueft: "2026-10-10: geladen (43 kB, produkt_klima_tag_20250408_20261009_01303.txt); Stationsliste: 01303 Essen-Bredeney, 150 m, 51,4041 N 6,9677 O, seit 01.01.1935"
+  analysen: [hitzetage-station]
+  hinweise:
+    - Essen-Bredeney ist die einzige Essener Station in der Liste der Tageswerte Klima.
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Deutschen Wetterdienst (DWD) und werden an der Wetterstation Essen-Bredeney gemessen. Die
+      Datei wird täglich erneuert. Die Werte sind noch nicht vollständig geprüft.
+    inhalt: >-
+      Der Datensatz enthält für jeden Tag der letzten rund anderthalb Jahre Messwerte, unter anderem die höchste,
+      die tiefste und die mittlere Lufttemperatur in 2 Metern Höhe sowie den Niederschlag. Es ist eine Tabelle für
+      eine einzige Station am südlichen Stadtrand, rund 150 Meter hoch gelegen.
+    nutzen: >-
+      Damit können Sie zählen, wie viele Sommertage, heiße Tage oder Tropennächte es zuletzt gab. Die App nutzt die
+      Werte für das Thema „Heiße Tage seit 1935“ und hängt sie an die lange, geprüfte Reihe an. Auf der Seite
+      „Entwicklung über die Jahre“ dient die Station als Vergleich.
+    lesen: >-
+      Es sind echte Messwerte, aber nur von einem Ort; die Innenstadt ist vor allem nachts wärmer. Weil die Werte
+      noch nicht vollständig geprüft sind, gilt dort, wo es schon geprüfte Werte gibt, der geprüfte Wert. Das
+      laufende Jahr ist nie vollständig und zählt nicht in Mittelwerten.
+
+- id: dwd-klima-essen-historisch
+  titel: DWD Tageswerte, Station Essen-Bredeney (historisch)
+  quelle: dwd
+  bereitsteller: Deutscher Wetterdienst (DWD)
+  themen: [klima]
+  beschreibung: Qualitätsgeprüfte Tageswerte von Beginn der Messreihe bis Ende des Vorjahres.
+  format: Text (Semikolon) im ZIP
+  raumbezug: Messstation Essen-Bredeney (Stations-ID 01303)
+  stand: jährlich
+  lizenz: cc-by-4.0
+  namensnennung: "Deutscher Wetterdienst (DWD), Climate Data Center, CC BY 4.0"
+  seite: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/historical/
+  download:
+    art: verzeichnis
+    ordner: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/historical/
+    muster: tageswerte_KL_01303_*_hist.zip
+  status: geprueft
+  geprueft: "2026-10-10: geladen (810 kB, tageswerte_KL_01303_19350101_20251231_hist.zip)"
+  analysen: [hitzetage-station]
+  hinweise:
+    - "Vollständige Jahre (TXK und TNK an jedem Tag): 1935–1936, 1938–1944, 1948–2025. Es fehlen 1937 und 1945–1947 ganz."
+    - "Stationsverlegung am 12.07.1965: von 120 m auf 153,5 m Höhe, etwa 2 km nach Osten (Metadaten_Geographie_01303.txt). Bei langen Trends beachten."
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Deutschen Wetterdienst (DWD) und wurden an der Wetterstation Essen-Bredeney gemessen. Die
+      Reihe beginnt 1935 und reicht bis zum Ende des Vorjahres, derzeit bis Ende 2025. Sie wird einmal im Jahr
+      ergänzt, und die Werte sind geprüft.
+    inhalt: >-
+      Der Datensatz enthält für jeden Tag Messwerte, unter anderem die höchste, die tiefste und die mittlere
+      Lufttemperatur in 2 Metern Höhe sowie den Niederschlag. Es ist eine lange Tabelle für eine einzige Station.
+    nutzen: >-
+      Mit der langen Reihe können Sie sehen, ob heiße Tage in Essen häufiger geworden sind. Die App nutzt sie für
+      das Thema „Heiße Tage seit 1935“ und vergleicht dort die letzten zehn Jahre mit dem Zeitraum 1991 bis 2020.
+    lesen: >-
+      Es fehlen die Jahre 1937 und 1945 bis 1947 ganz. Im Juli 1965 wurde die Station um etwa 2 Kilometer nach Osten
+      und gut 30 Meter höher verlegt; das ist nicht herausgerechnet und bei langen Trends zu bedenken. Die Station
+      liegt am Stadtrand und steht nicht für die ganze Stadt.
+
+- id: dwd-stationen-kl
+  titel: DWD Stationsliste Tageswerte Klima
+  quelle: dwd
+  bereitsteller: Deutscher Wetterdienst (DWD)
+  themen: [klima]
+  beschreibung: Liste aller Stationen mit Kennung, Name, Höhe, Lage und Messzeitraum.
+  format: Text
+  raumbezug: Deutschland
+  stand: täglich
+  lizenz: cc-by-4.0
+  namensnennung: "Deutscher Wetterdienst (DWD), Climate Data Center, CC BY 4.0"
+  seite: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/
+  download:
+    art: datei
+    url: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/KL_Tageswerte_Beschreibung_Stationen.txt
+  status: geprueft
+  geprueft: "2026-10-10: geladen (1,4 MB), 01303 Essen-Bredeney in Zeile 301"
+  hinweise:
+    - "Feste Spaltenbreiten, Zeichensatz ISO-8859-1, Zeilenende CRLF."
+  erklaerung:
+    herkunft: >-
+      Die Liste veröffentlicht der Deutsche Wetterdienst (DWD). Sie wird täglich erneuert.
+    inhalt: >-
+      Die Liste enthält alle Wetterstationen in Deutschland mit Tageswerten, jeweils mit Kennnummer, Name, Höhe,
+      Lage und dem Zeitraum, in dem gemessen wurde. Für Essen steht dort nur die Station Essen-Bredeney, 150 Meter
+      hoch, mit Messungen seit 1935.
+    nutzen: >-
+      Die Liste dient als Nachschlagewerk, um die richtige Station zu finden und ihre Lage zu bestätigen. Ein Thema
+      der App rechnet nicht mit ihr.
+    lesen: >-
+      Die Liste enthält keine Wetterwerte, nur Angaben zu den Stationen. Frühere Verlegungen einer Station stehen
+      hier nicht, sondern in den Begleitdateien der Messwerte.
+
+- id: dwd-raster-heisse-tage
+  titel: DWD Jahresraster heiße Tage (1 km)
+  quelle: dwd
+  bereitsteller: Deutscher Wetterdienst (DWD)
+  themen: [klima]
+  beschreibung: Anzahl der heißen Tage (Höchstwert ab 30 °C) je Jahr auf einem 1-km-Gitter für Deutschland, aus Stationsdaten interpoliert. Eine Datei je Jahr seit 1951.
+  format: ESRI-ASCII-Gitter (gzip)
+  raumbezug: Deutschland, 1-km-Raster, EPSG:31467
+  stand: jährlich
+  lizenz: cc-by-4.0
+  namensnennung: "Deutscher Wetterdienst (DWD), Climate Data Center, CC BY 4.0"
+  seite: https://opendata.dwd.de/climate_environment/CDC/grids_germany/annual/hot_days/
+  download:
+    art: verzeichnis
+    ordner: https://opendata.dwd.de/climate_environment/CDC/grids_germany/annual/hot_days/
+    muster: grids_germany_annual_hot_days_*_17.asc.gz
+    alle: true
+    groesse_mb: 9
+  status: geprueft
+  geprueft: "2026-10-11: geladen (75 Dateien 1951–2025, 8 MB); Kopf (654 × 866, 1000 m, -999) wie in der Beschreibung; Stadtteil Bredeney gegen Station 01303 gerechnet (r = 0,99)"
+  analysen: [hitzetage-raster]
+  hinweise:
+    - "Beschreibung im selben Ordner (BESCHREIBUNG_gridsgermany_annual_hot_days_de.pdf, Stand 18.12.2018): Gauß-Krüger 3. Streifen, EPSG:31467; 654 × 866 Zellen, Fehlwert -999; heißer Tag = Höchstwert ab 30 °C."
+    - "Laut Beschreibung sind städtische Wärmeinsel und Kaltluftabfluss nicht abgebildet; das Messnetz hat sich über die Jahre verändert."
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Deutschen Wetterdienst (DWD). Er rechnet die Messwerte seiner Wetterstationen auf ein
+      Gitter für ganz Deutschland um, die Werte sind also aus Messungen abgeleitet, aber zwischen den Stationen
+      geschätzt. Es gibt eine Datei je Jahr seit 1951, jedes Jahr kommt eine neue hinzu.
+    inhalt: >-
+      Das Raster besteht aus Quadraten von 1 mal 1 Kilometer. Jedes Quadrat zeigt, an wie vielen Tagen im Jahr die
+      Höchsttemperatur 30 °C oder mehr erreichte. Das nennt man einen heißen Tag.
+    nutzen: >-
+      Damit sehen Sie, wie sich die Zahl heißer Tage in Ihrem Stadtteil seit 1951 verändert hat. Die App nutzt die
+      Daten für das Thema „Heiße Tage im Stadtteil“ und für die Seite „Entwicklung über die Jahre“. In ganz Essen
+      gab es 1961 bis 1990 im Mittel gut 4 heiße Tage im Jahr, 2016 bis 2025 im Mittel gut 10.
+    lesen: >-
+      Es sind Modellwerte: Laut DWD fehlt die zusätzliche Hitze der Stadt, und auch kühle Luft, die nachts abfließt,
+      ist nicht berücksichtigt. Unterschiede zwischen Stadtteilen kommen vor allem von Höhe und Lage, nicht von der
+      Bebauung, und benachbarte Stadtteile unterscheiden sich kaum. Frühe Jahre beruhen auf weniger Stationen.
+
+- id: dwd-raster-sommertage
+  titel: DWD Jahresraster Sommertage (1 km)
+  quelle: dwd
+  bereitsteller: Deutscher Wetterdienst (DWD)
+  themen: [klima]
+  beschreibung: Anzahl der Sommertage (Höchstwert ab 25 °C) je Jahr auf einem 1-km-Gitter für Deutschland, aus Stationsdaten interpoliert. Eine Datei je Jahr seit 1951.
+  format: ESRI-ASCII-Gitter (gzip)
+  raumbezug: Deutschland, 1-km-Raster, EPSG:31467
+  stand: jährlich
+  lizenz: cc-by-4.0
+  namensnennung: "Deutscher Wetterdienst (DWD), Climate Data Center, CC BY 4.0"
+  seite: https://opendata.dwd.de/climate_environment/CDC/grids_germany/annual/summer_days/
+  download:
+    art: verzeichnis
+    ordner: https://opendata.dwd.de/climate_environment/CDC/grids_germany/annual/summer_days/
+    muster: grids_germany_annual_summer_days_*_17.asc.gz
+    alle: true
+    groesse_mb: 12
+  status: geprueft
+  geprueft: "2026-10-11: geladen (75 Dateien 1951–2025, 16 MB); Kopf wie bei den heißen Tagen"
+  analysen: [hitzetage-raster]
+  hinweise:
+    - "Beschreibung im selben Ordner (BESCHREIBUNG_gridsgermany_annual_summer_days_de.pdf): EPSG:31467, Fehlwert -999; Sommertag = Höchstwert ab 25 °C."
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Deutschen Wetterdienst (DWD). Er rechnet die Messwerte seiner Wetterstationen auf ein
+      Gitter für ganz Deutschland um, die Werte sind also zwischen den Stationen geschätzt. Es gibt eine Datei je
+      Jahr seit 1951, jedes Jahr kommt eine neue hinzu.
+    inhalt: >-
+      Das Raster besteht aus Quadraten von 1 mal 1 Kilometer. Jedes Quadrat zeigt, an wie vielen Tagen im Jahr die
+      Höchsttemperatur 25 °C oder mehr erreichte. Das nennt man einen Sommertag.
+    nutzen: >-
+      Damit können Sie verfolgen, wie oft es in Ihrem Stadtteil warm wird und wie sich das über die Jahrzehnte
+      verändert hat. Die App nutzt die Daten als Ergänzung im Thema „Heiße Tage im Stadtteil“.
+    lesen: >-
+      Es sind Modellwerte ohne die zusätzliche Hitze der Stadt. Bei 1 Kilometer großen Quadraten unterscheiden sich
+      benachbarte Stadtteile kaum. Frühe Jahre beruhen auf weniger Stationen.
+
+- id: dwd-raster-jahresmittel
+  titel: DWD Jahresraster Lufttemperatur, Jahresmittel (1 km)
+  quelle: dwd
+  bereitsteller: Deutscher Wetterdienst (DWD)
+  themen: [klima]
+  beschreibung: Jahresmittel der Lufttemperatur in 2 m Höhe auf einem 1-km-Gitter für Deutschland, aus Stationsdaten interpoliert. Eine Datei je Jahr seit 1881.
+  format: ESRI-ASCII-Gitter (gzip)
+  raumbezug: Deutschland, 1-km-Raster, EPSG:31467
+  stand: jährlich
+  lizenz: cc-by-4.0
+  namensnennung: "Deutscher Wetterdienst (DWD), Climate Data Center, CC BY 4.0"
+  seite: https://opendata.dwd.de/climate_environment/CDC/grids_germany/annual/air_temperature_mean/
+  download:
+    art: verzeichnis
+    ordner: https://opendata.dwd.de/climate_environment/CDC/grids_germany/annual/air_temperature_mean/
+    muster: grids_germany_annual_air_temp_mean_*.asc.gz
+    alle: true
+    groesse_mb: 40
+  status: geprueft
+  geprueft: "2026-10-11: geladen (145 Dateien 1881–2025, 32 MB; 1881–1890 sind ZIP trotz Endung .gz); 1/10 °C laut Beschreibung, Bredeney gegen Station r = 0,999"
+  analysen: [hitzetage-raster]
+  hinweise:
+    - "Beschreibung im selben Ordner (BESCHREIBUNG_gridsgermany_annual_air_temperature_mean_de.pdf): EPSG:31467, Fehlwert -999, Werte in 1/10 °C."
+    - "Dateinamen ohne Unterstrich vor der 17: grids_germany_annual_air_temp_mean_JJJJ17.asc.gz."
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen vom Deutschen Wetterdienst (DWD). Er rechnet die Messwerte seiner Wetterstationen auf ein
+      Gitter für ganz Deutschland um, die Werte sind also zwischen den Stationen geschätzt. Es gibt eine Datei je
+      Jahr seit 1881, jedes Jahr kommt eine neue hinzu.
+    inhalt: >-
+      Das Raster besteht aus Quadraten von 1 mal 1 Kilometer. Jedes Quadrat zeigt die mittlere Lufttemperatur eines
+      Jahres in 2 Metern Höhe. Die Werte sind in Zehntelgrad gespeichert, die App rechnet sie in Grad Celsius um.
+    nutzen: >-
+      Damit sehen Sie, wie warm es in Ihrem Stadtteil im Jahresmittel ist und wie sich das seit dem 19. Jahrhundert
+      verändert hat. Die App nutzt die Daten als Ergänzung im Thema „Heiße Tage im Stadtteil“ und auf der Seite
+      „Entwicklung über die Jahre“.
+    lesen: >-
+      Es sind Modellwerte ohne die zusätzliche Wärme der Stadt; Unterschiede zwischen Stadtteilen kommen vor allem
+      von der Höhe. Ein Jahresmittel sagt nichts darüber, wie heiß einzelne Tage waren. Frühe Jahre beruhen auf
+      weniger Stationen.
+
+- id: kuehlorte
+  titel: Kühlorte in Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen
+  themen: [klima]
+  beschreibung: Öffentlich zugängliche kühle Orte für Hitzetage.
+  format: GeoJSON (WGS84)
+  raumbezug: Stadt Essen, Punkte
+  stand: laut Datensatz
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/kühle-orte-essen
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Kuehle_Orte.geojson
+    groesse_mb: 0.4
+  analysen: [kuehlorte]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Kuehle_Orte.geojson, 0.4 MB) und inspiziert: 547 Punkte"
+  hinweise:
+    - "2026-10-10: Ressource Kuehle_Orte.geojson (414.746 B), daneben Kuehle_Orte.zip. Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0, geändert 2026-09-25."
+  erklaerung:
+    herkunft: >-
+      Die Liste veröffentlicht die Stadt Essen auf ihrem Portal für offene Daten. Wie die Orte ausgewählt werden und
+      wie oft die Liste erneuert wird, ist nicht angegeben. Die Lizenz verlangt, dass bei einer Weitergabe die Stadt
+      Essen als Quelle genannt wird.
+    inhalt: >-
+      Der Datensatz enthält 547 Punkte, jeder ist ein öffentlich zugänglicher kühler Ort für heiße Tage. Zu jedem
+      Ort stehen die Art, ob er draußen oder drinnen liegt, die Öffnungszeiten und ob er etwas kostet. 517 der Orte
+      liegen im Freien.
+    nutzen: >-
+      Damit finden Sie kühle Orte in Ihrer Nähe. Die App zeigt die Orte als Punkte auf der Karte und nutzt sie für
+      das Thema „Kühle Orte“, das zeigt, welcher Anteil der Fläche eines Stadtteils höchstens 300 Meter Luftlinie
+      von einem kühlen Ort entfernt liegt.
+    lesen: >-
+      Die App rechnet mit Luftlinie, der echte Fußweg ist oft länger. Jeder Ort zählt gleich, ob kleiner Platz oder
+      großer Park, und Öffnungszeiten oder Eintritt werden nicht berücksichtigt. Wälder stehen nicht in der Liste,
+      obwohl sie oft selbst kühle Orte sind.
+
+# ------------------------------------------------------------------ Luft
+
+- id: luqs-aktuell
+  titel: Luftqualität NRW, Messwerte der letzten 24 Stunden
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [luft]
+  beschreibung: NO₂, PM10, O₃, SO₂ und Meteorologie aller Messstationen in NRW, stündlich, vorläufige Werte.
+  format: CSV
+  raumbezug: NRW, Messstationen
+  stand: stündlich vorgesehen
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/luftqualitaet/luqs/aktuelle_luftqualitaet/
+  download:
+    art: datei
+    url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/luftqualitaet/luqs/aktuelle_luftqualitaet/OpenKontiLUQS_aktuelle-messwerte-24h.csv
+  status: geprueft
+  geprueft: "2026-10: Datei vorhanden, aber seit dem 21.08.2026 nicht aktualisiert"
+  hinweise:
+    - Die Werte sind vorläufig und nicht validiert.
+    - Bei der Prüfung im Oktober 2026 war die Datei seit dem 21.08.2026 nicht aktualisiert. Für Zeitreihen die UBA-Luftdaten nehmen.
+  erklaerung:
+    herkunft: >-
+      Die Daten stammen vom Landesamt für Natur, Umwelt und Klima NRW (LANUK), das ein Netz von Luftmessstationen in
+      ganz Nordrhein-Westfalen betreibt. Die Werte werden an den Stationen gemessen und sollen stündlich erneuert
+      werden. Bei der Prüfung im Oktober 2026 war die Datei allerdings seit dem 21. August 2026 nicht mehr
+      aktualisiert worden.
+    inhalt: >-
+      Die Datei enthält die Messwerte der letzten 24 Stunden von allen Messstationen in NRW, Stunde für Stunde.
+      Gemessen werden Stickstoffdioxid, Feinstaub (PM10), Ozon und Schwefeldioxid, dazu Wetterwerte. Es sind Werte
+      je Station, keine Werte für Flächen oder Stadtteile.
+    nutzen: >-
+      Mit dem Datensatz können Sie nachsehen, wie die Luft an einer Messstation in den letzten Stunden war. Diese
+      App nutzt ihn bisher in keinem Thema; für die Entwicklung über die Jahre greift das Thema „Luftqualität“ auf
+      die geprüften Jahreswerte des Umweltbundesamts zurück.
+    lesen: >-
+      Die Werte sind vorläufig und nicht geprüft, sie können sich später noch ändern. Eine Station misst nur an
+      ihrem Ort, oft an einer belebten Straße, und steht nicht für einen ganzen Stadtteil. Weil die Datei zuletzt
+      nicht mehr erneuert wurde, sollten Sie auf das Datum der Werte achten.
+
+- id: uba-luftdaten
+  titel: Luftdaten des Umweltbundesamts (Essener Stationen)
+  quelle: uba
+  bereitsteller: Umweltbundesamt
+  themen: [luft]
+  beschreibung: Messwerte ab 2016, Luftqualitätsindex, Prognosen und Jahresbilanzen der Stationen mit dem Präfix DENW.
+  format: JSON über REST-API
+  raumbezug: Messstationen
+  stand: stündlich
+  lizenz: dl-de-by-2.0
+  seite: https://luftdaten.umweltbundesamt.de/
+  download:
+    art: api
+    url: https://luftdaten.umweltbundesamt.de/api/air-data/v3/measures/json?date_from={vor_7_tagen}&time_from=1&date_to={gestern}&time_to=24&station=DENW043&component=5&scope=2
+    datei: uba_no2_essen_ost_7_tage.json
+  status: geprueft
+  geprueft: "2026-10-10: Abfrage beantwortet (HTTP 200, 168 Stundenmittel NO₂ für DENW043 Essen-Ost Steeler Straße)"
+  hinweise:
+    - Werte des laufenden Jahres sind ungeprüft, finale Daten folgen im Juni des Folgejahres.
+    - "Abfrage: component 5 = NO₂, scope 2 = Stundenmittel. Weitere Stationen in Essen laut stations-Endpunkt (2026-10-10), u. a. DENW024 Essen-Vogelheim, DENW134 Gladbecker Straße, DENW161 Alfredstraße, DENW162 Brückstraße, DENW171 Hombrucher Straße 21, DENW215 Essen-Frohnhausen, DENW247 Essen-Schuir (LANUV), DENW277 Krayer Straße 213, DENW373 Abteistraße, DENW398 und DENW399 Kruppstraße, DENW427 Altenessener Straße 255. Nicht alle messen noch."
+    - "Lizenz laut OpenAPI-Spezifikation (uba_api_v3.yml): „Data licence Germany - attribution - version 2.0“ (dl-de/by-2-0)."
+  erklaerung:
+    herkunft: >-
+      Das Umweltbundesamt stellt die Messwerte aller deutschen Luftmessstationen über eine Online-Schnittstelle
+      bereit, darunter die Essener Stationen. Die Werte werden an den Stationen gemessen und stündlich ergänzt.
+      Werte des laufenden Jahres sind noch ungeprüft; die endgültigen Daten folgen im Juni des Folgejahres.
+    inhalt: >-
+      Der Datensatz enthält Messwerte ab 2016 je Station, zum Beispiel Stundenmittel für Stickstoffdioxid, dazu
+      einen Luftqualitätsindex, Vorhersagen und Jahresbilanzen. In Essen gibt es mehrere Stationen, etwa in
+      Vogelheim, Frohnhausen, an der Steeler Straße oder an der Gladbecker Straße. Nicht alle davon messen heute
+      noch.
+    nutzen: >-
+      Mit diesen Daten lassen sich Verläufe der Luftbelastung an einzelnen Stationen über Stunden und Tage ansehen.
+      Diese App nutzt die stündlichen Werte bisher in keinem Thema; das Thema „Luftqualität“ rechnet mit den
+      Jahresbilanzen desselben Amts.
+    lesen: >-
+      Jede Station misst nur an ihrem Standort, meist an stark befahrenen Straßen, und sagt wenig über die Luft im
+      ganzen Stadtteil. Aktuelle Werte sind vorläufig und können sich bei der Prüfung noch ändern. Welche Stationen
+      es gibt, wechselt mit der Zeit.
+
+- id: uba-jahresbilanzen
+  titel: Jahresbilanzen der Luftmessstationen (UBA)
+  quelle: uba
+  bereitsteller: Umweltbundesamt
+  themen: [luft]
+  beschreibung: Jahresmittel von NO₂, PM₁₀ und PM₂,₅ und Überschreitungen der Grenzwerte für alle Messstationen in Deutschland, auf geprüften Daten; dazu die Stationsliste.
+  format: JSON über REST-API
+  raumbezug: Messstationen
+  stand: jährlich, 2010 bis 2025
+  lizenz: dl-de-by-2.0
+  seite: https://luftdaten.umweltbundesamt.de/
+  analysen: [luft-station]
+  download:
+    art: dateien
+    format: JSON
+    groesse_mb: 0.9
+    urls:
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/stations/json?lang=de&index=id", datei: stationen.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2010&lang=de", datei: jahr_2010_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2010&lang=de", datei: jahr_2010_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2010&lang=de", datei: jahr_2010_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2011&lang=de", datei: jahr_2011_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2011&lang=de", datei: jahr_2011_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2011&lang=de", datei: jahr_2011_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2012&lang=de", datei: jahr_2012_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2012&lang=de", datei: jahr_2012_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2012&lang=de", datei: jahr_2012_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2013&lang=de", datei: jahr_2013_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2013&lang=de", datei: jahr_2013_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2013&lang=de", datei: jahr_2013_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2014&lang=de", datei: jahr_2014_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2014&lang=de", datei: jahr_2014_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2014&lang=de", datei: jahr_2014_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2015&lang=de", datei: jahr_2015_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2015&lang=de", datei: jahr_2015_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2015&lang=de", datei: jahr_2015_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2016&lang=de", datei: jahr_2016_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2016&lang=de", datei: jahr_2016_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2016&lang=de", datei: jahr_2016_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2017&lang=de", datei: jahr_2017_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2017&lang=de", datei: jahr_2017_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2017&lang=de", datei: jahr_2017_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2018&lang=de", datei: jahr_2018_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2018&lang=de", datei: jahr_2018_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2018&lang=de", datei: jahr_2018_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2019&lang=de", datei: jahr_2019_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2019&lang=de", datei: jahr_2019_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2019&lang=de", datei: jahr_2019_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2020&lang=de", datei: jahr_2020_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2020&lang=de", datei: jahr_2020_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2020&lang=de", datei: jahr_2020_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2021&lang=de", datei: jahr_2021_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2021&lang=de", datei: jahr_2021_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2021&lang=de", datei: jahr_2021_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2022&lang=de", datei: jahr_2022_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2022&lang=de", datei: jahr_2022_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2022&lang=de", datei: jahr_2022_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2023&lang=de", datei: jahr_2023_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2023&lang=de", datei: jahr_2023_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2023&lang=de", datei: jahr_2023_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2024&lang=de", datei: jahr_2024_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2024&lang=de", datei: jahr_2024_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2024&lang=de", datei: jahr_2024_pm25.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=1&year=2025&lang=de", datei: jahr_2025_pm10.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=5&year=2025&lang=de", datei: jahr_2025_no2.json}
+      - {url: "https://luftdaten.umweltbundesamt.de/api/air-data/v3/annualbalances/json?component=9&year=2025&lang=de", datei: jahr_2025_pm25.json}
+  status: geprueft
+  geprueft: "2026-10-11: Abfragen beantwortet (HTTP 200, application/json); 2010 bis 2025 mit Daten, 2026 leer"
+  hinweise:
+    - "Bedeutung der Werte steht in jeder Antwort unter headers, z. B. NO₂: 1 = „Jahresmittelwert in µg/m³“, 2 = „Zahl der Stundenmittelwerte über 200 µg/m³“; PM₁₀: 2 = „Zahl der Tageswerte über 50 µg/m3“. Laut OpenAPI-Spezifikation (annualbalances): data[0] ist die station id, data[x] der Wert zu headers[x]."
+    - "2026-10-11: Alle 570 station ids der NO₂-Bilanz 2024 stehen in der Stationsliste (stations/json, index=id). Essener Stationen über das Feld station city. Beispiel 2024: DENW043 Essen-Ost Steeler Straße 22 µg/m³ NO₂."
+    - "Komponenten laut components/json: 1 = PM10, 5 = NO2, 9 = PM2,5. Jahresbilanzen beruhen auf geprüften Daten; das Vorjahr ist ab Juni vollständig."
+  erklaerung:
+    herkunft: >-
+      Das Umweltbundesamt fasst die Messungen aller Luftmessstationen in Deutschland zu Jahresbilanzen zusammen.
+      Grundlage sind geprüfte Messwerte. Vorhanden sind die Jahre 2010 bis 2025; ein abgeschlossenes Jahr ist ab
+      Juni des Folgejahres vollständig.
+    inhalt: >-
+      Für jede Station und jedes Jahr stehen darin das Jahresmittel von Stickstoffdioxid und von zwei Größen
+      Feinstaub (PM10 und PM2,5) in Mikrogramm je Kubikmeter Luft. Dazu kommt, wie oft Grenzwerte überschritten
+      wurden, etwa wie viele Tage der Feinstaub über 50 Mikrogramm lag. Eine Stationsliste nennt Namen und Ort jeder
+      Station.
+    nutzen: >-
+      Diese App nutzt die Jahresbilanzen im Thema „Luftqualität“. Sie zeigt dort, wie sich Stickstoffdioxid und
+      Feinstaub an den Essener Stationen seit 2010 entwickelt haben, und vergleicht die Werte mit den heutigen und
+      künftigen Grenzwerten der EU und mit den Richtwerten der Weltgesundheitsorganisation.
+    lesen: >-
+      Die Werte gelten für den Ort der Station, meist an einer belebten Straße, und nicht für ganze Stadtteile;
+      deshalb zählt Luft bisher nicht zur Mehrfachbelastung. Welche Stationen messen, ändert sich über die Jahre,
+      und das beeinflusst zum Beispiel den höchsten Wert eines Jahres. Das laufende Jahr fehlt, weil es noch keine
+      geprüften Daten gibt.
+
+- id: umweltzone
+  titel: Umweltzone Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen
+  themen: [luft]
+  beschreibung: Grenze der Umweltzone.
+  format: GeoJSON (WGS84), Shape
+  raumbezug: Stadt Essen, Fläche
+  stand: 2024
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/umweltzone-essen
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Umweltzone_Essen_0.geojson
+    groesse_mb: 0.3
+  analysen: [umweltzone]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Umweltzone_Essen_0.geojson, 0.3 MB) und inspiziert: 3 Flächen"
+  hinweise:
+    - "2026-10-10: Ressource Umweltzone_Essen_0.geojson (317.371 B). Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0."
+  erklaerung:
+    herkunft: >-
+      Die Stadt Essen veröffentlicht die Grenze der Umweltzone in ihrem Open-Data-Portal. Es handelt sich um eine
+      Festlegung der Verwaltung, nicht um eine Messung. Als Stand ist 2024 angegeben.
+    inhalt: >-
+      Die Datei enthält drei Flächen: eine große Fläche mit mehreren Aussparungen und zwei kleinere Flächen im
+      Norden. Weitere Angaben, etwa welche Regeln in der Zone gelten, stehen nicht in der Datei.
+    nutzen: >-
+      Mit dem Datensatz sehen Sie, welche Teile der Stadt in der Umweltzone liegen. Diese App nutzt ihn im Thema
+      „Umweltzone“ und berechnet, welcher Anteil der Fläche jedes Stadtteils in der Zone liegt; stadtweit sind es
+      gut drei Viertel der Fläche.
+    lesen: >-
+      Die Umweltzone ist eine Verkehrsregel und sagt nichts darüber, wie gut oder schlecht die Luft tatsächlich ist.
+      Ob und wie die Zone heute gilt, weiß der Anbieter; der Datensatz nennt den Stand 2024. Die Aussparungen, meist
+      Autobahnen, sind in der Datei nicht beschrieben; die App liest sie als Flächen außerhalb der Zone.
+
+- id: sensor-community-essen
+  titel: Feinstaubsensoren von Bürgerinnen und Bürgern (Sensor.Community)
+  quelle: sensor-community
+  bereitsteller: Sensor.Community
+  themen: [luft]
+  beschreibung: Aktuelle Messwerte privater Feinstaub- und Klimasensoren im Umkreis von 12 km um die Essener Mitte.
+  format: JSON
+  raumbezug: Einzelsensoren
+  stand: alle fünf Minuten
+  lizenz: odbl-1.0
+  seite: https://sensor.community/
+  download:
+    art: api
+    url: https://data.sensor.community/airrohr/v1/filter/area=51.45,7.01,12
+    datei: sensoren_essen.json
+  status: geprueft
+  geprueft: "2026-10-10: Abfrage beantwortet, 214 Messungen von 100 Sensoren (SDS011, DHT22, BME280, SPS30, BMP180)"
+  hinweise:
+    - Messqualität schwankt stark. Nur als Ergänzung zu den amtlichen Stationen nutzen.
+    - Lizenz laut Projektseite ODbL. Auf sensor.community und archive.sensor.community am 2026-10-10 keine Lizenzangabe gefunden; vor einer Weitergabe prüfen.
+    - "Die Abfrage liefert nur die Messungen der letzten rund fünf Minuten. Der Umkreis von 12 km um 51,45/7,01 reicht über die Stadtgrenze (z. B. Mülheim). Koordinaten mit exact_location 0 sind gerundet. Für Reihen das Archiv (archive.sensor.community) nutzen."
+    - "2026-10-11: Die Fußzeile von sensor.community verlinkt als „DB Contents License“ die Open Data Commons Database Contents License 1.0 (https://opendatacommons.org/licenses/dbcl/1-0/). ODbL (Datenbank) und DbCL (Inhalte) zusammen; vor einer Weitergabe beide nennen."
+  erklaerung:
+    herkunft: >-
+      Die Werte stammen von Feinstaub- und Klimasensoren, die Bürgerinnen und Bürger selbst gebaut und aufgestellt
+      haben. Das Projekt Sensor.Community sammelt sie und veröffentlicht sie etwa alle fünf Minuten. Es sind keine
+      amtlichen Messungen.
+    inhalt: >-
+      Die Abfrage liefert die Messungen der letzten rund fünf Minuten von privaten Sensoren im Umkreis von 12
+      Kilometern um die Essener Mitte, bei der Prüfung rund 100 Sensoren. Je nach Gerät sind das Feinstaubwerte oder
+      Werte wie Temperatur und Luftfeuchte, jeweils mit dem Standort des Sensors. Manche Standorte sind absichtlich
+      gerundet.
+    nutzen: >-
+      Die Sensoren zeigen, wie die Luft gerade an vielen Orten aussieht, auch dort, wo keine amtliche Station steht.
+      Diese App nutzt den Datensatz bisher in keinem Thema.
+    lesen: >-
+      Die Messqualität der Geräte schwankt stark; nutzen Sie die Werte nur als Ergänzung zu den amtlichen Stationen.
+      Der Umkreis reicht über die Stadtgrenze hinaus, etwa bis Mülheim, und eine Abfrage zeigt nur einen Augenblick.
+      Die Lizenz ist nicht abschließend geklärt und muss vor einer Weitergabe geprüft werden.
+
+# ------------------------------------------------------------------ Lärm
+
+- id: laermkarte-essen
+  titel: Lärmkarte Essen (Umgebungslärm)
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen, FB 59 Umweltamt und FB 62 Amt für Geoinformation, Vermessung und Kataster
+  themen: [laerm]
+  beschreibung: Lärmkarten der Stadt Essen nach Quellen getrennt (Straßen, Deutsche Bahn, Ruhrbahn, Industrieanlagen), jeweils ganztags und nachts.
+  format: Shape im ZIP (EPSG:4647), teils auch GeoJSON (WGS84)
+  raumbezug: Stadt Essen
+  stand: Straßen 2011, Schiene, Ruhrbahn und IED-Anlagen 2016
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/lärmkarte-essen
+  download:
+    art: dateien
+    urls:
+      - https://opendata.essen.de/sites/default/files/Laerm_Strassen_24h_2011.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_Strassen_Nacht_2011.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_DB_24h_2016.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_DB_Nacht_2016.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_Ruhrbahn_24h_2016.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_Ruhrbahn_Nacht_2016.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_IED_Anlagen_24h_2016.zip
+      - https://opendata.essen.de/sites/default/files/Laerm_IED_Anlagen_Nacht_2016.zip
+    groesse_mb: 31.0
+  analysen: [laerm]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Laerm_Strassen_Nacht_2011.zip, 16.0 MB) und inspiziert: Shape Laerm_Strassen_Nacht_2011, 2.085 Isophonen-Flächen in EPSG:4647, Feld WERT 45 bis 75 dB in 5-dB-Stufen"
+  hinweise:
+    - "2026-10-10: Ressourcen laut DKAN (package_show lärmkarte-essen): Laerm_Strassen_24h_2011.zip und _Nacht_2011.zip; Laerm_DB_, Laerm_Ruhrbahn_ und Laerm_IED_Anlagen_ jeweils 24h_2016 und Nacht_2016 als ZIP und GeoJSON. Straßen Nacht per HEAD bestätigt (15.967.707 B). Lizenz laut DKAN: https://www.govdata.de/dl-de/by-2-0."
+    - "Stand 2011 bzw. 2016; neuere Runden (2017, 2022) für Essen sind auf dem Portal nicht zu finden. Ob es sie beim Umweltamt gibt, ist offen."
+    - "2026-10-10: alle acht ZIPs per HEAD bestätigt (zusammen 30,97 MB); download.art dateien lädt sie gemeinsam."
+  erklaerung:
+    herkunft: >-
+      Die Lärmkarten stammen von der Stadt Essen, erstellt vom Umweltamt zusammen mit dem Amt für Geoinformation,
+      Vermessung und Kataster. Sie sind Modellrechnungen nach den Regeln für Umgebungslärm, keine Messungen. Die
+      Karte für Straßenlärm stammt von 2011, die für Eisenbahn, Ruhrbahn und Industrieanlagen von 2016; neuere
+      Karten für Essen sind im Portal nicht zu finden.
+    inhalt: >-
+      Für jede Lärmquelle gibt es eine Karte für den ganzen Tag und eine für die Nacht, zusammen acht Karten. Sie
+      zeigen Flächen, auf denen der berechnete Lärm in Stufen von 5 Dezibel liegt, etwa von 45 bis 75 Dezibel. Die
+      Karten der einzelnen Quellen sind unterschiedlich aufgebaut.
+    nutzen: >-
+      Mit den Karten sehen Sie, wo es durch Straßen, Bahnen oder Industrie laut ist. Diese App nutzt sie im Thema
+      „Lärm“ und berechnet, welcher Anteil der Fläche jedes Stadtteils nachts oder ganztags über einer Lärmschwelle
+      liegt. Das Ergebnis fließt auch in die „Mehrfachbelastung“ ein.
+    lesen: >-
+      Die Werte sind berechnet, nicht gemessen, und die Karten sind mehrere Jahre alt. Die App zählt die Fläche, an
+      der mindestens eine Quelle laut ist; dass zwei Quellen zusammen lauter sind als eine, lässt sich aus den
+      Stufen nicht nachrechnen. Eine laute Fläche bedeutet nicht, dass dort viele Menschen wohnen, etwa bei einer
+      Straße durch den Wald.
+
+- id: laermkarten-nrw
+  titel: Umgebungslärmkartierung NRW, Runde 4
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [laerm]
+  beschreibung: Lden und Lnight für Straßen-, Schienen- und Industrielärm nach der EU-Umgebungslärmrichtlinie, Methode CNOSSOS-EU.
+  format: ASCII-Grid im ZIP (10-m-Raster), dazu Shape; WMS
+  raumbezug: NRW, 10-m-Raster in 4 m Höhe
+  stand: Kartierung 2022, Eintrag 12/2025
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/laerm/umgebungslaerm2022/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/laerm/umgebungslaerm2022/
+    muster: "*-Strasse+SchieneRasterNachtpegel_EPSG25832_ASCII-GRID.zip"
+    groesse_mb: 103.9
+  dienste:
+    - art: wms
+      titel: WMS Umgebungslärm Stufe 4
+      url: https://www.wms.nrw.de/umwelt/laerm_stufe4
+  status: geprueft
+  geprueft: "2026-10-10: geladen (2022-Strasse+SchieneRasterNachtpegel, 103,9 MB) und inspiziert; Essen ist nicht enthalten"
+  hinweise:
+    - "Ordner „Umgebungslärmkartierung 2022 Runde 4“ laut index.json (Stand 2025-12-08, geprüft 2026-10-10): Strasse+SchieneRasterNachtpegel (103,9 MB) und Strasse+SchieneRaster24h-Pegel (129,0 MB) als ASCII-Grid, Straße und Schiene als Shape (bis 362 MB), Fassadenpunkte, Betroffenenstatistik (0,5 MB). Ordnerseite: „Diese Daten stehen unter der Datenlizenz Deutschland - Zero - Version 2.0“."
+    - "Das index.json dieses Ordners hat ein Komma vor der schließenden Klammer; laden.lies_index_json verträgt das seit 2026-10-10."
+    - "Ganztags (Lden) steht in 2022-Strasse+SchieneRaster24h-Pegel; für eine Lärm-Analyse beide Dateien laden (laden --datei NAME)."
+    - "Inhalt (2026-10-10): 396 verschachtelte ZIPs je Gemeinde (<Gemeindeschlüssel>_STR_RAST_NGT.ASC.zip), ASCII-Grid 10 m ohne Angabe des Koordinatensystems in der Datei. Essen (05113000) und die anderen kreisfreien Städte des Ruhrgebiets fehlen; sie kartieren als Ballungsraum selbst. Für Essen: laermkarte-essen."
+  erklaerung:
+    herkunft: >-
+      Das Landesamt für Natur, Umwelt und Klima NRW (LANUK) veröffentlicht die Lärmkarten der vierten Runde nach der
+      EU-Umgebungslärmrichtlinie. Sie sind mit einem einheitlichen europäischen Rechenverfahren berechnet, also
+      Modellwerte und keine Messungen. Die Kartierung stammt von 2022, eingetragen wurde sie im Dezember 2025.
+    inhalt: >-
+      Die Daten zeigen den Lärm von Straßen, Schienen und Industrie als Raster mit Feldern von 10 mal 10 Metern,
+      berechnet für eine Höhe von 4 Metern, einmal für den ganzen Tag und einmal für die Nacht. Dazu gibt es Linien
+      und Punkte an Fassaden sowie eine Statistik der Betroffenen. Die Dateien sind nach Gemeinden aufgeteilt.
+    nutzen: >-
+      Für viele Gemeinden in NRW lässt sich damit der Lärm nach einem einheitlichen Verfahren vergleichen. Für Essen
+      hilft der Datensatz aber nicht: Essen und die anderen kreisfreien Städte des Ruhrgebiets fehlen darin, weil
+      sie ihre Lärmkarten selbst erstellen. Diese App nutzt deshalb für das Thema „Lärm“ die Lärmkarte der Stadt
+      Essen.
+    lesen: >-
+      Wichtig ist vor allem, dass Essen in den Dateien nicht vorkommt. Die Werte sind Modellrechnungen. Ein
+      Kartendienst zum Ansehen ist zusätzlich verfügbar.
+
+# ------------------------------------------------------------------ Wasser und Starkregen
+
+- id: starkregen-bkg
+  titel: Hinweiskarte Starkregengefahren
+  quelle: bkg
+  bereitsteller: Bundesamt für Kartographie und Geodäsie (BKG)
+  themen: [wasser]
+  beschreibung: Wassertiefe und Fließgeschwindigkeit für ein seltenes (100-jährliches) und ein extremes Ereignis (90 mm in einer Stunde).
+  format: WMS; Download als GeoTIFF-Kacheln
+  raumbezug: 1-m-Raster, in NRW verfügbar
+  stand: 10/2021
+  lizenz: dl-de-by-2.0
+  namensnennung: "© BKG ({jahr}) dl-de/by-2-0"
+  seite: https://gdz.bkg.bund.de/index.php/default/wms-hinweiskarte-starkregengefahren-wms-starkregen.html
+  download:
+    art: manuell
+    hinweis: "Kacheln je Szenario im Ordner https://daten.gdz.bkg.bund.de/produkte/sonstige/starkregen/aktuell/nw/ (Unterordner maxdepth_kostra, maxdepth_90mm, maxvelocity_*); für Essen rund 9 Kacheln zu je etwa 39 MB je Szenario. Die Ladeart verzeichnis nimmt nur eine Datei."
+  dienste:
+    - art: wms
+      titel: WMS Hinweiskarte Starkregengefahren (BKG)
+      url: https://sgx.geodatenzentrum.de/wms_starkregen
+  status: dienst
+  hinweise:
+    - In der Quellenangabe das Jahr des letzten Datenbezugs nennen.
+    - "2026-10-10: GetCapabilities antwortet (HTTP 200). Ebenen für NRW: nw_tiefe_agw und nw_tiefe_extrem (Überflutungstiefe bei außergewöhnlichem bzw. extremem Ereignis), nw_geschw_agw, nw_geschw_extrem, nw_gewaesser. Fees: Datenlizenz Deutschland Namensnennung 2.0. Stand 2024, keine Fortführung."
+    - "Produktseite: „Die Daten werden geldleistungsfrei gemäß der Datenlizenz Deutschland Namensnennung 2.0 zur Verfügung gestellt.“"
+  erklaerung:
+    herkunft: >-
+      Die Hinweiskarte stammt vom Bundesamt für Kartographie und Geodäsie (BKG). Sie ist eine Modellrechnung, die
+      simuliert, wie Wasser nach sehr starkem Regen abfließt und sich sammelt. Der Katalog nennt als Stand Oktober
+      2021, ein späterer Hinweis Stand 2024 ohne weitere Fortführung; welche Angabe zutrifft, ist nicht geklärt.
+    inhalt: >-
+      Die Karte zeigt für ein seltenes Ereignis, wie es statistisch etwa einmal in 100 Jahren vorkommt, und für ein
+      extremes Ereignis mit 90 Millimetern Regen in einer Stunde, wie tief das Wasser steht und wie schnell es
+      fließt. Die Auflösung ist ein Raster mit Feldern von 1 mal 1 Meter. Für NRW gibt es außerdem eine Ebene mit
+      den Gewässern.
+    nutzen: >-
+      Mit der Karte erkennen Sie, wo sich bei Starkregen Wasser sammeln oder schnell fließen könnte. In dieser App
+      ist sie nur als Karte zum Ansehen eingebunden; die App lädt die Daten nicht automatisch und rechnet nicht
+      damit. Für das Thema „Starkregen“ nutzt sie die Karte der Stadt Essen.
+    lesen: >-
+      Es handelt sich um berechnete Hinweise, nicht um beobachtete Überflutungen. Wer die Karte weitergibt, muss das
+      BKG mit dem Jahr des Datenbezugs als Quelle nennen.
+
+- id: starkregen-essen
+  titel: Starkregengefahrenkarte Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen
+  themen: [wasser]
+  beschreibung: Städtische Karte der Überflutungsgefahr bei Starkregen.
+  format: ZIP (Geodaten in EPSG:4647)
+  raumbezug: Stadt Essen
+  stand: laut Datensatz
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/starkregenkarte
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Starkregen_0.zip
+    groesse_mb: 31.7
+  analysen: [starkregen]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Starkregen_0.zip, 33.3 MB) und inspiziert: Shape Ueberflutung_Kategorien, 548.396 Flächen in EPSG:4647"
+  hinweise:
+    - "2026-10-10: Adresse bestätigt (HTTP 200, application/zip, 33.284.924 B, Last-Modified 02.09.2022), noch nicht geladen. Lizenz laut Datensatz (DKAN package_show starkregenkarte): https://www.govdata.de/dl-de/by-2-0."
+    - "Inhalt laut Beschreibung: drei Klassen der Einstautiefe für ein 100-jährliches Ereignis, ohne Kanalisation. Koordinatensystem EPSG:4647."
+  erklaerung:
+    herkunft: >-
+      Die Starkregengefahrenkarte stammt von der Stadt Essen und steht in ihrem Open-Data-Portal. Sie ist eine
+      Modellrechnung, keine Beobachtung. Die Datei wurde im September 2022 erstellt.
+    inhalt: >-
+      Die Karte zeigt, wie hoch das Wasser direkt nach einem Starkregen steht, wie er statistisch etwa einmal in 100
+      Jahren vorkommt, berechnet ohne die Wirkung der Kanalisation. Die Flächen sind in drei Klassen eingeteilt:
+      unter 5 Zentimeter, 5 bis unter 25 Zentimeter sowie 25 Zentimeter und mehr. Die Karte deckt den größten Teil,
+      aber nicht die ganze Stadtfläche ab.
+    nutzen: >-
+      Mit der Karte sehen Sie, wo sich bei sehr starkem Regen Wasser sammeln könnte. Diese App nutzt sie im Thema
+      „Starkregen“ und berechnet, welcher Anteil der Fläche jedes Stadtteils 25 Zentimeter oder tiefer unter Wasser
+      stünde. Das Ergebnis fließt auch in die „Mehrfachbelastung“ ein.
+    lesen: >-
+      Weil die Kanalisation fehlt, zeigt die Karte eher zu viel Wasser für häufige, kleinere Regen; für das seltene
+      Extremereignis ist das gewollt. Hochwasser von Flüssen wie der Ruhr ist nicht enthalten. In der Karte zählen Bäche, Ruhr und Baldeneysee als
+      tiefe Wasserflächen mit; die App zieht sie mit der Landbedeckung NRW ab und bezieht den Anteil auf die
+      Landfläche. Bauliche
+      Änderungen seit 2022 sind nicht berücksichtigt, und Fläche ist nicht gleich Zahl der betroffenen Menschen.
+
+- id: pegel-essen
+  titel: Pegel an Bundeswasserstraßen im Umkreis von Essen
+  quelle: pegel
+  bereitsteller: Wasserstraßen- und Schifffahrtsverwaltung des Bundes
+  themen: [wasser]
+  beschreibung: Pegelstationen im Umkreis von 20 km mit aktuellem Wasserstand.
+  format: JSON
+  raumbezug: Pegelstationen
+  stand: Echtzeit
+  lizenz: dl-de-zero-2.0
+  seite: https://pegelonline.wsv.de/webservice/dokuRestapi
+  download:
+    art: api
+    url: https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json?latitude=51.45&longitude=7.01&radius=20&includeTimeseries=true&includeCurrentMeasurement=true
+    datei: pegel_essen.json
+  status: geprueft
+  geprueft: "2026-10-10: Abfrage beantwortet, 12 Pegel; Lizenz DL-DE Zero 2.0 in den Nutzungsbedingungen (https://pegelonline.wsv.de/gast/nutzungsbedingungen)"
+  hinweise:
+    - Nur Bundeswasserstraßen. Die Ruhrpegel im Stadtgebiet betreiben überwiegend Land und Ruhrverband.
+    - "Antwort am 2026-10-10: 12 Pegel, keiner im Essener Stadtgebiet. Ruhr: Schloßbrücke Mülheim (km 12,2, nur W) und Hattingen (km 56,9, W und Q, Ruhrverband); dazu Rhein-Herne-Kanal (Schleusen Gelsenkirchen, Oberhausen, Wanne-Eickel, Duisburg-Meiderich) und Rhein in Duisburg-Ruhrort."
+  erklaerung:
+    herkunft: >-
+      Die Daten kommen von der Wasserstraßen- und Schifffahrtsverwaltung des Bundes über deren Dienst Pegelonline.
+      Gemessen wird an Pegelstationen an Bundeswasserstraßen, die Werte werden laufend in Echtzeit veröffentlicht.
+    inhalt: >-
+      Der Datensatz enthält die Pegel im Umkreis von 20 Kilometern um Essen mit Name, Gewässer, Lage und dem
+      aktuellen Wasserstand, bei der Prüfung 12 Pegel. Sie liegen an der Ruhr in Mülheim und Hattingen, am
+      Rhein-Herne-Kanal und am Rhein in Duisburg. Keiner davon liegt im Essener Stadtgebiet.
+    nutzen: >-
+      Mit den Daten sehen Sie, wie hoch das Wasser an den nahen Flüssen und Kanälen gerade steht. Diese App zeigt
+      die Pegel als Punkte auf der Karte, jeweils mit dem Wasserstand zum Zeitpunkt des Ladens.
+    lesen: >-
+      Der angezeigte Wasserstand ist eine Momentaufnahme vom Zeitpunkt des Ladens. Erfasst sind nur
+      Bundeswasserstraßen; die Pegel an der Ruhr im Essener Stadtgebiet betreiben überwiegend das Land und der
+      Ruhrverband, sie fehlen hier.
+
+- id: hygon
+  titel: Hydrologische Rohdaten NRW (HYGON)
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [wasser]
+  beschreibung: Wasserstand, Niederschlag, Wassertemperatur und Güteparameter an Messstellen. Ungeprüfte Rohdaten.
+  format: CSV im ZIP (ganz NRW), Stationslisten als Text und Shape
+  raumbezug: Messstellen
+  stand: laufend
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hygon/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/wasser/oberflaechengewaesser/hygon/
+    muster: "OpenHygon-Pegel-aktuell_CSV.zip"
+    groesse_mb: 1.0
+  status: geprueft
+  geprueft: "2026-10-10: geladen (OpenHygon-Pegel-aktuell_CSV.zip, 1.0 MB) und inspiziert: messwerte.txt mit Semikolon, 3 Spalten"
+  hinweise:
+    - "2026-10-10: index.json mit NRW-weiten ZIPs je Messgröße (Pegel, Niederschlag, Wassertemperatur; jeweils aktuell und Bestand, Pegel-Bestand 10 MB) und Stationslisten. Der frühere Hinweis „einzeln je Messstelle“ ist überholt. Ordnerseite: Datenlizenz Deutschland - Zero - Version 2.0."
+  erklaerung:
+    herkunft: >-
+      Die Daten stammen vom Landesamt für Natur, Umwelt und Klima NRW (LANUK). Es sind Messwerte von Messstellen an
+      Gewässern und für Niederschlag in ganz NRW, die laufend ergänzt werden. Es sind ungeprüfte Rohdaten.
+    inhalt: >-
+      Die Dateien enthalten Wasserstände, Niederschlag, Wassertemperatur und Werte zur Wasserqualität an
+      Messstellen, jeweils als aktuelle Werte und als ältere Bestände für ganz NRW. Dazu gibt es Listen der
+      Messstellen mit ihrer Lage.
+    nutzen: >-
+      Mit den Daten können Sie Wasserstände und Regenmengen an Messstellen in NRW verfolgen. Diese App nutzt den
+      Datensatz bisher in keinem Thema.
+    lesen: >-
+      Es sind Rohdaten, die nicht geprüft sind und Fehler enthalten können. Welche Messstellen in Essen liegen, ist
+      im Katalog nicht festgehalten. Die Werte gelten für die einzelne Messstelle, nicht für eine Fläche.
+
+# ------------------------------------------------------------------ Grün, Natur und Boden
+
+- id: bodenversiegelung-nrw
+  titel: Bodenversiegelung NRW
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK), Projekt EBOVE
+  themen: [gruen, wasser]
+  beschreibung: Versiegelt oder nicht versiegelt, dazu Anteile je Gemeinde. Aus Luftbildern 2024 (0,5 m) und Satellitendaten 2006 bis 2018.
+  format: GeoTIFF im ZIP (Ausschnitt je Kreis oder kreisfreie Stadt)
+  raumbezug: Essen, 0,5-m-Raster, EPSG:25832
+  stand: 2024 (Luftbilder 2022 bis 2024), alle zwei Jahre
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/boden/bodenversiegelung/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/boden/bodenversiegelung/
+    muster: "bodenversiegelung-lb_Essen_05113000_*_TIFF.zip"   # luftbildbasiert, nur Essen
+    groesse_mb: 24.9
+  status: geprueft
+  geprueft: "2026-10-10: geladen (bodenversiegelung-lb_Essen_05113000_2024_EPSG25832_TIFF.zip, 24,9 MB) und inspiziert; Werte mit der Gemeindetabelle des Anbieters abgeglichen"
+  felder:
+    versiegelt: 1
+  analysen: [versiegelung]
+  hinweise:
+    - "Inhalt: Versiegelungsmaske_2024_Essen.tif, uint8, 0,5 m, Fehlwert 3. Werte 0 und 1. Methodik (BodenversiegelungNRW_meta.zip): Klassen „Versiegelt“ und „nicht Versiegelt“, ohne Angabe der Codes."
+    - "1 = versiegelt, belegt 2026-10-10: Anteil der Einsen in Essen 36,5 % (Stichprobe jeder 10. Zelle) = Bodenversiegelungsgrad Essen 36,5 % in Bodenversiegelung-Luftbildbasiert-Gemeinde_2024_EPSG25832_Shape.zip (Feld Bodenversi, KN 05113000)."
+    - "Lizenz: open.nrw, „Klimaatlas NRW - Boden: Bodenversiegelung Satellitenbasiert und Luftbildbasiert“, Datenlizenz Deutschland – Zero – Version 2.0, https://open.nrw/dataset/3c495e4d-5cd3-45b4-a3d5-93d16731e8fd (2026-10-10). Die Ordnerseite selbst nennt keine Lizenz."
+    - "Im Ordner außerdem: satellitenbasiert 2006 bis 2018 für Essen (bodenversiegelung-sat_Essen_05113000_2006-2018_EPSG25832_TIFF.zip), Gemeindeanteile als Shape, NRW-Raster 1,6 GB."
+  erklaerung:
+    herkunft: >-
+      Die Daten stammen vom Landesamt für Natur, Umwelt und Klima NRW (Projekt EBOVE). Ein Computerverfahren hat
+      Luftbilder aus den Jahren 2022 bis 2024 ausgewertet und jede kleine Fläche als versiegelt oder nicht
+      versiegelt eingestuft. Der Stand heißt 2024; laut Katalog erscheint alle zwei Jahre ein neuer.
+    inhalt: >-
+      Der Datensatz ist ein feines Raster für Essen: Jede Zelle ist einen halben Meter mal einen halben Meter groß
+      und hat nur zwei mögliche Werte, versiegelt oder nicht versiegelt. Versiegelt heißt, der Boden ist mit
+      Gebäuden, Asphalt, Beton oder Pflaster bedeckt. Insgesamt sind in Essen 36,5 Prozent der Fläche versiegelt,
+      genau wie in der Gemeindetabelle des Landesamts.
+    nutzen: >-
+      Die App berechnet daraus im Thema „Versiegelter Boden“ den Anteil versiegelter Fläche je Stadtteil. Das ist
+      wichtig für Hitze und Regenwasser, weil versiegelter Boden sich aufheizt und kein Wasser aufnimmt.
+    lesen: >-
+      Es gibt nur zwei Stufen; teilweise versiegelte Flächen wie Rasengittersteine oder Schotter sind nicht eigens
+      ausgewiesen. Bäume über Straßen verdecken Versiegelung, begrünte Dächer zählen als versiegelt. Der Anteil
+      bezieht sich auf die ganze Fläche des Stadtteils mit Wald und Wasser, nicht auf die Menschen. Mit der älteren
+      Satellitenreihe ist der Wert nicht vergleichbar.
+
+- id: bodenversiegelung-sat-nrw
+  titel: Bodenversiegelung NRW, satellitenbasiert 2006 bis 2018
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK), Projekt EBOVE
+  themen: [gruen, wasser]
+  beschreibung: Versiegelungsgrad aus Satellitendaten für die Jahre 2006 bis 2018, Ausschnitt Essen. Ältere Reihe neben den Luftbilddaten 2024 (bodenversiegelung-nrw).
+  format: GeoTIFF im ZIP (Ausschnitt je Kreis oder kreisfreie Stadt)
+  raumbezug: Essen, Raster, EPSG:25832
+  stand: 2006 bis 2018
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/boden/bodenversiegelung/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/boden/bodenversiegelung/
+    muster: "bodenversiegelung-sat_Essen_05113000_*_TIFF.zip"   # satellitenbasiert, nur Essen
+    groesse_mb: 10.0
+  status: geprueft
+  geprueft: "2026-10-11: geladen (bodenversiegelung-sat_Essen_05113000_2006-2018_EPSG25832_TIFF.zip, 10,0 MB) und inspiziert; Mittel für Essen mit den Gemeindewerten des Anbieters abgeglichen"
+  analysen: [versiegelung]
+  hinweise:
+    - "Inhalt (2026-10-11): fünf GeoTIFF, je Jahr anders aufgebaut. VG_20m_2006 (uint8, EPSG:3035, kein Fehlwert), VG_20m_2009 und VG_20m_2012 (float32, EPSG:3035), VG_20m_2015 (uint8, EPSG:25832), VG_10m_2018 (int8, EPSG:3035, Fehlwert −128). Trotz „EPSG25832“ im ZIP-Namen sind vier Raster in EPSG:3035."
+    - "Werte: Versiegelungsgrad in Prozent, 0 bis 100. Beleg: Methodik_Umwelt_Bodenversiegelung_satellitenbasiert.pdf (Bodenversiegelung-satellitenbasiert_meta.zip): „Dabei reichen die Werte von 0 bis 100 % Versiegelung“, Quelle Copernicus HRL Imperviousness (20 m; 2018 10 m). Im Raster 2012 kommt außerdem 254 vor (24 Zellen im Stadtgebiet); das ist kein Prozentwert und wird nicht gezählt."
+    - "Abgleich 2026-10-11, Mittel der Zellen mit Mittelpunkt im Stadtgebiet gegen das Feld MEAN der Gemeindetabellen (Bodenversiegelung-Satellitenbasiert-Gemeinde_<Jahr>_EPSG25832_Shape.zip, GN Essen): 2006 28,559 / 28,560; 2009 28,763 / 28,757; 2012 28,830 / 28,834; 2015 28,859 / 28,860; 2018 30,803 / 30,797."
+    - "Laut Methodik sorgt der Wechsel von 20 auf 10 m Auflösung 2018 für einen deutlichen Anstieg der Flächen mit hohem Versiegelungsgrad; 2015 und 2018 sind deshalb nur bedingt vergleichbar. Mit den Luftbilddaten 2024 (bodenversiegelung-nrw, versiegelt ja/nein, 36,5 %) gar nicht vergleichbar."
+    - "2026-10-11: Datei im index.json des Ordners: bodenversiegelung-sat_Essen_05113000_2006-2018_EPSG25832_TIFF.zip (9.992.539 B, 2025-06-12). Lizenz wie bodenversiegelung-nrw (open.nrw, „Bodenversiegelung Satellitenbasiert und Luftbildbasiert“, DL-DE Zero 2.0)."
+    - "Im selben Ordner: Bodenversiegelung-Satellitenbasiert-Gemeinde_<Jahr>_EPSG25832_Shape.zip für 2006, 2009, 2012, 2015, 2018 (Anteile je Gemeinde, zum Abgleich) und Bodenversiegelung-satellitenbasiert_meta.zip (Beschreibung)."
+  erklaerung:
+    herkunft: >-
+      Auch diese Reihe veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW. Sie beruht auf Satellitendaten
+      des europäischen Programms Copernicus und liegt für die Jahre 2006, 2009, 2012, 2015 und 2018 vor. Neuere
+      Jahre gibt es in dieser Reihe nicht.
+    inhalt: >-
+      Für jedes der fünf Jahre gibt es ein Raster über Essen. Jede Zelle ist 20 mal 20 Meter groß, im Jahr 2018 10
+      mal 10 Meter, und enthält den Versiegelungsgrad in Prozent von 0 bis 100. Für ganz Essen liegt der mittlere
+      Wert zwischen gut 28 Prozent (2006) und knapp 31 Prozent (2018).
+    nutzen: >-
+      Die App zeigt damit im Thema „Versiegelter Boden“ einen Verlauf über die Jahre als Karte. So sehen Sie, in
+      welchen Stadtteilen sich zwischen 2006 und 2018 etwas verändert hat; in den meisten war es weniger als ein
+      Prozentpunkt.
+    lesen: >-
+      Der Anstieg 2018 kommt laut Landesamt vor allem von der feineren Auflösung, nicht von neuer Bebauung; 2015 und
+      2018 sind deshalb nur bedingt vergleichbar. Mit dem Wert aus den Luftbildern 2024 ist diese Reihe gar nicht
+      vergleichbar, weil sie anders gemessen wird, und die App hängt 2024 deshalb nicht an. Die Werte beziehen sich
+      auf Fläche, nicht auf Menschen.
+
+- id: stadtbaeume
+  titel: Stadtbäume Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen, Grün und Gruga
+  themen: [gruen, klima]
+  beschreibung: Baumstandorte mit Angaben zur Bewässerung.
+  format: WFS (GML)
+  raumbezug: Einzelbäume
+  stand: zuletzt geändert 27.09.2023
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/stadtbäume
+  download:
+    art: wfs
+    url: https://geo.essen.de/arcgis/services/essen/Stadtbaeume_Standorte/MapServer/WFSServer
+    typname: Stadtbaeume_Standorte:Stadtbaeume_Jungbaeume
+  analysen: [jungbaeume]
+  status: geprueft
+  geprueft: "2026-10-10: geladen (stadtbaeume.gml, 13.7 MB) und inspiziert: GML, 13.306 Jungbäume in der Box um Essen"
+  hinweise:
+    - Der Datensatz enthält nur Jungbäume und weitere Baumstandorte, nicht den ganzen Baumbestand.
+    - "2026-10-10: WFS-Ressource des Datensatzes; GetCapabilities nennt Stadtbaeume_Standorte:Stadtbaeume_Jungbaeume und Stadtbaeume_Standorte:Stadtbaeume_Weitere_Standorte (laut Recherche-Agent 12.397 bzw. 71.957 Objekte). Eingetragen sind die Jungbäume; die weiteren Standorte bei Bedarf als eigenen Datensatz anlegen. Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0 (Katalog hatte DL-DE Zero)."
+  erklaerung:
+    herkunft: >-
+      Die Baumstandorte veröffentlicht die Stadt Essen (Grün und Gruga) über einen Kartendienst auf ihrem
+      Open-Data-Portal. Die Angaben stammen aus der Verwaltung der Stadt. Laut Portal wurde der Datensatz zuletzt am
+      27. September 2023 geändert.
+    inhalt: >-
+      Der Datensatz enthält Punkte, je einen für einen Baum. Die App nutzt die Jungbäume, die die Stadt seit 2008
+      gepflanzt hat, rund 13.300 Stück; zu jedem gehören unter anderem das Pflanzjahr und eine Angabe zur
+      Bewässerung. Eine zweite Ebene mit weiteren Baumstandorten gibt es, die App lädt sie aber nicht.
+    nutzen: >-
+      Im Thema „Neue Bäume“ zählt die App, wie viele Jungbäume je Quadratkilometer in einem Stadtteil stehen, und
+      zeigt über das Pflanzjahr einen Verlauf über die Jahre. Auf der Karte können Sie die Bäume als Punkte
+      einblenden.
+    lesen: >-
+      Es sind nur die von der Stadt gepflanzten Jungbäume, nicht der ganze Baumbestand: Wald, Parkbäume, ältere
+      Straßenbäume und private Bäume fehlen. Gefällte Bäume stehen nicht in den Daten, viele neue Bäume können also
+      auch Ersatz bedeuten. Was die Angabe zur Bewässerung genau bedeutet, ist nicht belegt; die App wertet sie
+      nicht aus.
+
+- id: naturschutzgebiete-nrw
+  titel: Naturschutzgebiete NRW
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK), LINFOS
+  themen: [gruen]
+  beschreibung: Lage und Abgrenzung der Naturschutzgebiete.
+  format: Shape im ZIP (ganz NRW)
+  raumbezug: NRW
+  stand: 2025
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/naturschutz/linfos/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/naturschutz/linfos/
+    muster: "Naturschutzgebiete_EPSG25832_Shape.zip"
+    groesse_mb: 8.9
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Naturschutzgebiete_EPSG25832_Shape.zip, 9.3 MB) und inspiziert: Shape vw_nsgpolygonproved, 3.391 Flächen in NRW, 41 im Stadtgebiet"
+  hinweise:
+    - "2026-10-10: Datei im index.json und per HEAD bestätigt (9.312.129 B), noch nicht geladen. Ordnerseite LINFOS: „Diese Daten stehen unter der Datenlizenz Deutschland - Zero - Version 2.0. Jede Nutzung ist ohne Einschränkungen oder Bedingungen zulässig“. Der frühere Hinweis „nicht offen lizenziert“ ist überholt."
+  erklaerung:
+    herkunft: >-
+      Die Naturschutzgebiete veröffentlicht das Landesamt für Natur, Umwelt und Klima NRW in seinem
+      Informationssystem LINFOS. Die Abgrenzungen sind amtlich festgesetzt, also Verwaltungsdaten. Der Stand ist
+      2025; wie oft die Daten erneuert werden, ist nicht angegeben.
+    inhalt: >-
+      Der Datensatz enthält die Flächen aller Naturschutzgebiete in Nordrhein-Westfalen, rund 3.400, davon 41 im
+      Essener Stadtgebiet. Welche Eigenschaften zu den Flächen gehören, ist im Katalog nicht beschrieben.
+    nutzen: >-
+      Man kann damit sehen, wo in Essen Natur besonders geschützt ist, und das mit anderen Themen vergleichen. Die
+      App lädt den Datensatz, nutzt ihn aber derzeit in keinem Thema.
+    lesen: >-
+      Ein Naturschutzgebiet ist eine rechtliche Festlegung und sagt nichts über den Zustand der Natur oder den
+      Zugang für Menschen aus. Die Datei umfasst ganz NRW, für Essen muss sie zugeschnitten werden. Die Daten dürfen
+      ohne Bedingungen genutzt werden.
+
+- id: gruendachkataster-nrw
+  titel: Gründachkataster NRW
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [gruen, klima]
+  beschreibung: Modelliertes Potenzial für nachträgliche Dachbegrünung je Gebäude.
+  format: Esri File-Geodatabase im ZIP, Ausschnitt Essen
+  raumbezug: Gebäude
+  stand: 2026
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/gruendachkataster/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/gruendachkataster/
+    muster: "*_05113000_Essen_*Geodatabase.zip"
+    groesse_mb: 138.8
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Gruendachpotentiale-NRW_05113000_Essen_EPSG25832_Geodatabase.zip, 145.6 MB) und inspiziert: File-Geodatabase, Layer NRW_Gruendachpotenzial mit 1.096.451 Flächen (EPSG:25832); der Inspektionsbericht liest .gdb-Ordner noch nicht"
+  hinweise:
+    - "2026-10-10: Gruendachpotentiale-NRW_05113000_Essen_EPSG25832_Geodatabase.zip im index.json und per HEAD bestätigt (145.561.628 B, Stand 2021-04-21), noch nicht geladen. Ordnerseite: Datenlizenz Deutschland - Zero - Version 2.0. Metadaten: Gruendachpotentiale_meta.zip."
+  erklaerung:
+    herkunft: >-
+      Das Gründachkataster stammt vom Landesamt für Natur, Umwelt und Klima NRW. Es ist eine Modellrechnung, keine
+      Bestandsaufnahme vor Ort. Der Katalog nennt den Stand 2026, die geladene Datei trägt aber das Datum April
+      2021; wie aktuell die Werte genau sind, ist deshalb nicht eindeutig.
+    inhalt: >-
+      Der Datensatz enthält rund 1,1 Millionen Flächen für Essen mit Bezug zu einzelnen Gebäuden. Zu jeder Fläche
+      ist berechnet, wie gut sie sich für eine nachträgliche Dachbegrünung eignet. Welche Eigenschaften und
+      Einheiten genau enthalten sind, ist im Katalog nicht beschrieben.
+    nutzen: >-
+      Damit könnte man zeigen, wo in Essen Dächer begrünt werden könnten, etwa um Hitze und Regenwasser zu mindern.
+      Die App lädt den Datensatz, nutzt ihn aber derzeit in keinem Thema.
+    lesen: >-
+      Es handelt sich um Modellwerte für ein mögliches Potenzial, nicht um bereits begrünte Dächer. Ob ein Dach
+      wirklich begrünt werden kann, hängt auch von Statik und Eigentum ab, was die Daten nicht kennen. Die Daten
+      dürfen ohne Bedingungen genutzt werden.
+
+- id: osm-gruenflaechen
+  titel: Grünflächen und Wald aus OpenStreetMap
+  quelle: osm
+  bereitsteller: OpenStreetMap-Mitwirkende
+  themen: [gruen]
+  beschreibung: Parks, Wälder, Wiesen und Spielplätze aus OpenStreetMap.
+  format: über die Overpass-API
+  raumbezug: Stadt Essen
+  stand: laufend
+  lizenz: odbl-1.0
+  namensnennung: "© OpenStreetMap-Mitwirkende, ODbL"
+  seite: https://www.openstreetmap.org/
+  download:
+    art: manuell
+    hinweis: Ein Abruf über die Overpass-API ist noch nicht eingebaut. Als GeoJSON exportieren (z. B. mit overpass-turbo) und einlesen.
+  status: manuell
+
+# ------------------------------------------------------------------ Energie und Klimaschutz
+  hinweise:
+    - "2026-10-10: Lizenz ODbL auf https://www.openstreetmap.org/copyright bestätigt. Fertige Auszüge gibt es bei Geofabrik (Drittanbieter), z. B. Regierungsbezirk Düsseldorf als GeoPackage-ZIP rund 377 MB; weiter manuell."
+  erklaerung:
+    herkunft: >-
+      Diese Daten stammen aus OpenStreetMap, einer freien Weltkarte, die Freiwillige zusammentragen. Die Einträge
+      werden laufend ergänzt und geändert. Es sind keine amtlichen Daten.
+    inhalt: >-
+      Gemeint sind Flächen wie Parks, Wälder, Wiesen und Spielplätze im Essener Stadtgebiet. Welche Eigenschaften
+      genau dazugehören, hängt davon ab, was die Freiwilligen eingetragen haben; im Katalog ist es nicht
+      beschrieben.
+    nutzen: >-
+      Damit lässt sich zum Beispiel zeigen, wo öffentliche Grünflächen und Spielplätze liegen. Die App lädt den
+      Datensatz nicht automatisch und nutzt ihn derzeit in keinem Thema; Sie müssten ihn von Hand beschaffen.
+    lesen: >-
+      Wie vollständig und genau die Einträge sind, hängt von der Arbeit der Freiwilligen ab und kann von Viertel zu
+      Viertel schwanken. Bei einer Weitergabe ist „© OpenStreetMap-Mitwirkende“ zu nennen, und daraus abgeleitete
+      Datensammlungen müssen unter derselben Lizenz weitergegeben werden.
+
+- id: mastr-essen
+  titel: Marktstammdatenregister, Anlagen in Essen
+  quelle: mastr
+  bereitsteller: Bundesnetzagentur
+  themen: [energie]
+  beschreibung: Photovoltaik, Batteriespeicher, BHKW und weitere Erzeuger mit Standort und Inbetriebnahme.
+  format: XML-Gesamtexport, SOAP-API
+  raumbezug: Einzelanlagen
+  stand: täglich
+  lizenz: dl-de-by-2.0
+  namensnennung: "Marktstammdatenregister, © Bundesnetzagentur, dl-de/by-2-0"
+  seite: https://www.marktstammdatenregister.de/
+  download:
+    art: manuell
+    hinweis: Den Gesamtexport mit dem Python-Paket open-mastr laden, nach dem Gemeindeschlüssel 05113000 filtern und als CSV einlesen.
+  status: manuell
+  hinweise:
+    - "2026-10-10: Die Seite https://www.marktstammdatenregister.de/MaStR/Datendownload nennt „Lizenz: Datenlizenz Deutschland – Namensnennung – Version 2.0“. Gesamtexport rund 3,2 GB, Dateiname mit Tagesdatum, kein index.json; weiter manuell mit open-mastr."
+  erklaerung:
+    herkunft: >-
+      Das Marktstammdatenregister führt die Bundesnetzagentur. Betreiber müssen dort ihre Anlagen zur Erzeugung von
+      Strom und Gas sowie Speicher selbst eintragen; es sind also Verwaltungsdaten. Das Register wird täglich als
+      Gesamtdatei bereitgestellt.
+    inhalt: >-
+      Der Datensatz enthält einzelne Anlagen, zum Beispiel Solaranlagen, Batteriespeicher und Blockheizkraftwerke,
+      jeweils mit Standort und Datum der Inbetriebnahme. Für Essen muss man die Anlagen aus dem bundesweiten
+      Register herausfiltern.
+    nutzen: >-
+      Damit lässt sich etwa zeigen, wie viele Solaranlagen und Speicher es in Essen gibt und wie schnell sie
+      hinzukommen. Geplant ist eine Auswertung je Stadtteil; derzeit nutzt die App den Datensatz in keinem Thema.
+    lesen: >-
+      Die App lädt das Register nicht automatisch, weil die Gesamtdatei sehr groß ist; Sie müssten sie von Hand
+      holen. Die Angaben beruhen auf den Meldungen der Betreiber; wie vollständig sie sind, ist im Katalog nicht
+      bewertet. Bei einer Weitergabe ist die Bundesnetzagentur als Quelle zu nennen.
+
+- id: solarkataster-nrw
+  titel: Solarkataster NRW, Dachflächen
+  quelle: lanuk
+  bereitsteller: Landesamt für Natur, Umwelt und Klima NRW (LANUK)
+  themen: [energie]
+  beschreibung: Je Dachfläche geeignete Fläche, Leistung in kWp und Ertrag.
+  format: Shape im ZIP, Ausschnitt Essen
+  raumbezug: Dachflächen
+  stand: nach Bedarf
+  lizenz: dl-de-zero-2.0
+  seite: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/solarkataster/photovoltaik/
+  download:
+    art: verzeichnis
+    ordner: https://www.opengeodata.nrw.de/produkte/umwelt_klima/energie/solarkataster/photovoltaik/
+    muster: "Solarkataster-Potentiale-Photovoltaik_05113000_Essen_*Shape.zip"
+    groesse_mb: 107.0
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Solarkataster-Potentiale-Photovoltaik_05113000_Essen_EPSG25832_Shape.zip, 112.1 MB) und inspiziert: Shape, 327.563 Dachflächen in EPSG:25832"
+  hinweise:
+    - "2026-10-10: Datei im index.json und per HEAD bestätigt (112.144.390 B, Stand 2025-06-11), noch nicht geladen. Ordnerseite: Datenlizenz Deutschland - Zero - Version 2.0; der frühere Hinweis „nicht offen lizenziert“ ist überholt."
+    - "Freiflächen-PV für Essen im Nachbarordner ff_photovoltaik (Solarkataster-Potentiale-FF-Photovoltaik_05113000_Essen_EPSG25832_Shape.zip, 1,4 MB laut index.json)."
+  erklaerung:
+    herkunft: >-
+      Das Solarkataster stammt vom Landesamt für Natur, Umwelt und Klima NRW. Es ist eine Modellrechnung, die für
+      jede Dachfläche abschätzt, wie gut sie sich für Solarstrom eignet. Die geladene Datei trägt das Datum Juni
+      2025; neue Stände erscheinen laut Katalog nach Bedarf.
+    inhalt: >-
+      Der Datensatz enthält rund 330.000 Dachflächen in Essen. Zu jeder gehören die geeignete Fläche, die mögliche
+      Leistung in Kilowatt-Peak (der Spitzenleistung einer Solaranlage) und der zu erwartende Ertrag. Welche Einheit
+      der Ertrag hat, ist im Katalog nicht angegeben.
+    nutzen: >-
+      Damit lässt sich zeigen, wo in Essen viel Platz für Solaranlagen auf Dächern wäre. Die App lädt den Datensatz,
+      nutzt ihn aber derzeit in keinem Thema.
+    lesen: >-
+      Die Werte sind Modellwerte für ein mögliches Potenzial, nicht für gebaute Anlagen; welche Anlagen es wirklich
+      gibt, steht im Marktstammdatenregister. Statik, Denkmalschutz oder Eigentum kennt das Modell nicht. Die Daten
+      dürfen ohne Bedingungen genutzt werden.
+
+- id: ladesaeulen
+  titel: Öffentliche Ladepunkte (Ladesäulenregister)
+  quelle: ladesaeulenregister
+  bereitsteller: Bundesnetzagentur
+  themen: [energie, mobilitaet]
+  beschreibung: Öffentlich zugängliche Ladepunkte für Elektrofahrzeuge.
+  format: CSV (ganz Deutschland)
+  raumbezug: Einzelstandorte
+  stand: laut Bundesnetzagentur
+  lizenz: cc-by-4.0
+  seite: https://www.bundesnetzagentur.de/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/Ladesaeulenkarte/start.html
+  download:
+    art: datei
+    url: https://data.bundesnetzagentur.de/Bundesnetzagentur/DE/Fachthemen/ElektrizitaetundGas/E-Mobilitaet/Ladesaeulenregister_BNetzA_2026-09-01.csv
+    groesse_mb: 53.0
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Ladesaeulenregister_BNetzA_2026-09-01.csv, 55.6 MB) und inspiziert: CSV mit Semikolon, 47 Spalten, ganz Deutschland"
+  hinweise:
+    - "2026-10-10: Link auf der Seite der Bundesnetzagentur, HTTP 200, 55.559.083 B. Der Dateiname enthält das Datum und ändert sich; bei 404 die neue Datei auf der Seite suchen und hier eintragen. Daneben eine xlsx (Ladesaeulenregister_BNetzA_2026-09-30.xlsx)."
+    - "Lizenz wörtlich: „Die Daten sind durch eine Creative Commons Namensnennung 4.0 International Lizenz lizenziert … Als Namensnennung für Daten dieser Internetseite ist Bundesnetzagentur.de zu verwenden.“"
+    - "Bundesweite Liste; für Essen nach Ort bzw. Koordinaten filtern."
+  erklaerung:
+    herkunft: >-
+      Das Ladesäulenregister führt die Bundesnetzagentur für ganz Deutschland. Es beruht auf den Meldungen der
+      Betreiber öffentlicher Ladepunkte, ist also eine Verwaltungsliste. Die geladene Datei trägt das Datum 1.
+      September 2026; neue Ausgaben erscheinen unter neuem Namen, wie oft, ist nicht angegeben.
+    inhalt: >-
+      Jede Zeile ist eine öffentlich zugängliche Ladeeinrichtung für Elektroautos mit Adresse und Koordinaten. Dazu
+      gehören unter anderem der Betreiber, die Art der Ladeeinrichtung, die Zahl der Ladepunkte, die Leistung in
+      Kilowatt und das Datum der Inbetriebnahme. Die App filtert die Einträge der kreisfreien Stadt Essen heraus.
+    nutzen: >-
+      Auf der Karte können Sie die Ladesäulen in Essen als Punkte einblenden und anklicken. Eine Kennzahl je
+      Stadtteil berechnet die App daraus derzeit nicht.
+    lesen: >-
+      Enthalten sind nur öffentlich zugängliche Ladepunkte, die gemeldet wurden; private Wallboxen fehlen. Eine
+      Ladeeinrichtung kann mehrere Ladepunkte haben, ein Punkt auf der Karte ist also nicht gleich ein Stellplatz.
+      Bei einer Weitergabe ist die Bundesnetzagentur als Quelle zu nennen.
+
+- id: treibhausgasbilanz
+  titel: Treibhausgasbilanz der Stadt Essen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen
+  themen: [energie, klima]
+  beschreibung: Emissionen nach BISKO, gesamt, je Sektor und je Einwohner, 1990 bis 2019.
+  format: CSV (Indikatoren des Klimadashboards)
+  raumbezug: Stadt Essen
+  stand: 1990 bis 2019
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/klimadashboard-essen
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Indikatoren_2024-08-16.csv
+    groesse_mb: 0.2
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Indikatoren_2024-08-16.csv, 0.2 MB) und inspiziert: CSV mit Semikolon, 9 Spalten, 981 Zeilen"
+  hinweise:
+    - "2026-10-10: Statt der Berichte im RIS: Datensatz „Klimadashboard Essen“ mit Indikatoren_2024-08-16.csv (195.603 B). Laut Recherche-Agent darin GES_THG (Mio. t CO₂e) 1990–2019 und Sektoren; neuere Werte nur in Berichten. Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0."
+  erklaerung:
+    herkunft: >-
+      Die Treibhausgasbilanz veröffentlicht die Stadt Essen als Teil ihres Klimadashboards auf dem Open-Data-Portal.
+      Die Werte sind nach der Rechenmethode BISKO berechnet, also eine Bilanzrechnung und keine direkte Messung. Die
+      Reihe reicht von 1990 bis 2019; neuere Werte stehen nur in Berichten der Stadt.
+    inhalt: >-
+      Der Datensatz ist eine Tabelle mit Kennzahlen des Klimadashboards. Darin stehen die Treibhausgas-Emissionen
+      der Stadt insgesamt, aufgeteilt nach Bereichen (Sektoren), und je Einwohnerin und Einwohner. Was die
+      Rechenmethode im Einzelnen festlegt und welche Bereiche genau unterschieden werden, ist im Katalog nicht
+      beschrieben.
+    nutzen: >-
+      Damit lässt sich verfolgen, wie sich der Ausstoß von Treibhausgasen in Essen über drei Jahrzehnte entwickelt
+      hat. Die App lädt den Datensatz, nutzt ihn aber derzeit in keinem Thema.
+    lesen: >-
+      Es gibt nur Werte für die ganze Stadt, nicht je Stadtteil. Die Reihe endet 2019 und zeigt deshalb nicht die
+      jüngste Entwicklung. Bei einer Weitergabe muss die Stadt Essen als Quelle genannt werden.
+
+# ------------------------------------------------------------------ Bevölkerung und Soziales
+
+- id: zensus-2022-gitter
+  titel: Zensus 2022, Gitterdaten
+  quelle: zensus-2022
+  bereitsteller: Statistische Ämter des Bundes und der Länder
+  themen: [bevoelkerung]
+  beschreibung: Bevölkerung und weitere Merkmale auf Gitterzellen. Grundlage, um Belastungen in Menschen statt in Fläche zu zählen.
+  format: CSV je Merkmal
+  raumbezug: Gitterzellen (100 m, 1 km, 10 km)
+  stand: Zensus 2022
+  lizenz: dl-de-by-2.0
+  seite: https://www.destatis.de/DE/Themen/Gesellschaft-Umwelt/Bevoelkerung/Zensus2022/_inhalt.html
+  download:
+    art: datei
+    url: https://www.destatis.de/static/DE/zensus/gitterdaten/Zensus2022_Bevoelkerungszahl.zip
+    groesse_mb: 18
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Zensus2022_Bevoelkerungszahl.zip, 18.5 MB) und inspiziert: CSV mit Semikolon je Gitter (100 m, 1 km, 10 km), ganz Deutschland"
+  hinweise:
+    - "Adresse bestätigt 2026-10-10 (HTTP 200, application/zip, Link auf der Destatis-Seite „Bevölkerungszahlen in Gitterzellen (zip, 18 MB)“). Der Server nennt keine Größe; noch nicht geladen. Jedes ZIP enthält 10-km-, 1-km- und 100-m-Gitter für ganz Deutschland als CSV und eine Datensatzbeschreibung (XLSX)."
+    - "Weitere Merkmale im selben Ordner, u. a. Anteil_ab_65-jaehrige_in_Gitterzellen.zip (laut Seite 21 MB, auch 100-m-Gitter) und Durchschnittsalter_in_Gitterzellen.zip."
+    - "Lizenz geklärt 2026-10-11: Die Datensatzbeschreibung im ZIP (Datensatzbeschreibung_Bevoelkerungszahl_Gitterzellen.xlsx) sagt: „…sind lizenziert unter der Datenlizenz Deutschland – Namensnennung – Version 2.0 (dl-de/by-2-0; http://www.govdata.de/dl-de/by-2-0)“. Urheber: © Statistische Ämter des Bundes und der Länder."
+    - "2026-10-11: Kontrollsumme Essen: 570.632 Einwohner in 9.749 Zellen mit Mittelpunkt im Stadtgebiet; Zensus 2022 nennt für Essen 571.039 (−0,07 %, Randzellen und Geheimhaltung). Zellen ohne Einwohner fehlen in der Datei; Sonderzeichen kommen in Essen nicht vor."
+    - "Die bisher eingetragene Seite ergebnisse.zensus2022.de führt zur Zensusdatenbank, nicht zu den Gitterdaten."
+  erklaerung:
+    herkunft: >-
+      Die Gitterdaten stammen von den Statistischen Ämtern des Bundes und der Länder und beruhen auf dem Zensus
+      2022, einer amtlichen Bevölkerungszählung. Sie geben den Stand dieses Zensus wieder. Ob und wann es neuere
+      Gitterdaten gibt, ist nicht angegeben.
+    inhalt: >-
+      Ganz Deutschland ist in gleich große Quadrate eingeteilt, mit Seitenlängen von 100 Metern, 1 Kilometer und 10
+      Kilometern. Für jedes Quadrat steht dort die Zahl der Einwohnerinnen und Einwohner; weitere Dateien enthalten
+      andere Merkmale, etwa den Anteil der Menschen ab 65 Jahren oder das Durchschnittsalter. Quadrate ohne
+      Einwohner fehlen in der Datei.
+    nutzen: >-
+      Mit dem Gitter lässt sich schätzen, wie viele Menschen in einer belasteten Fläche wohnen, statt nur die Fläche
+      zu zählen. Diese App nutzt die 100-Meter-Quadrate als Zusatz in den Themen „Hitze in der Nacht“, „Lärm“,
+      „Starkregen“ und „Mehrfachbelastung“ und nennt dort geschätzte Einwohnerzahlen.
+    lesen: >-
+      Die App verteilt die Einwohner gleichmäßig über jedes Quadrat; die Zahlen sind deshalb Schätzungen und heißen
+      auch so. Für Essen ergeben die Quadrate rund 570.600 Menschen, etwas weniger als die amtliche Zahl des Zensus,
+      weil Randquadrate und aus Datenschutzgründen veränderte Werte eine Rolle spielen. Die Zahlen zeigen, wo
+      Menschen gemeldet wohnen, nicht wo sie sich tagsüber aufhalten.
+
+- id: privathaushalte-stadtteile
+  titel: Privathaushalte nach Stadtteilen
+  quelle: essen-opendata
+  bereitsteller: Stadt Essen, Amt für Statistik
+  themen: [bevoelkerung]
+  beschreibung: Haushalte nach Größe und Stadtteil ab 2007.
+  format: CSV
+  raumbezug: Stadtteile
+  stand: jährlich
+  lizenz: dl-de-by-2.0
+  seite: https://opendata.essen.de/dataset/privathaushalte-essen
+  download:
+    art: datei
+    url: https://opendata.essen.de/sites/default/files/Anzahl%20der%20Privathaushalte%20in%20den%20Stadtteilen%20ab%202007_3.csv
+    groesse_mb: 0.05
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Anzahl der Privathaushalte in den Stadtteilen ab 2007_3.csv, 0.1 MB) und inspiziert: CSV mit Semikolon, 11 Spalten, 950 Zeilen"
+  analysen: [haushalte]
+  felder:
+    stadtteil: Stadtteil      # Nummer 1 bis 50, wie STADTT der Stadtteilgrenzen
+  hinweise:
+    - "2026-10-11: Zeichensatz Windows-1252 (nicht UTF-8). 50 Stadtteile × 19 Jahre (2007 bis 2025). Datensatzseite: „Anzahl der Privathaushalte insgesamt ab 2007 zum Stichtag 31.12.“, Haushalte aus den Meldedaten gebildet (Haushaltegenerierung seit 2003), Personen in Anstalten zählen nicht."
+    - "2026-10-11 geprüft: HH_EINE_PERSON, HH_MIT_KINDERN ≤ INSGESAMT; HH_MIT_3OM_KINDERN ≤ HH_MIT_KINDERN; HH_EINE_PERSON_25B69 ≤ HH_EINE_PERSON; Summe BEVOELKERUNG_IN_HH 2025: 588.765 (plausibel für Essen). Offene Frage: Altersgrenze für „Kinder“ und Bedeutung von HH_EINE_PERSON_25B69 (vermutlich 25 bis 69 Jahre) sind im Portal nicht beschrieben; die Analyse haushalte nutzt diese Spalten nicht bzw. nennt die Lücke."
+    - "2026-10-10: Ressource des Datensatzes (51.176 B, geändert 2026-03-13). Die Endung _3 deutet darauf hin, dass sich die Adresse bei jeder Aktualisierung ändert; bei 404 auf der Datensatzseite nachsehen. Lizenz laut DKAN (package_show, 2026-10-10): https://www.govdata.de/dl-de/by-2-0."
+  erklaerung:
+    herkunft: >-
+      Die Zahlen veröffentlicht das Amt für Statistik der Stadt Essen in ihrem Open-Data-Portal. Die Stadt bildet
+      die Haushalte aus den Meldedaten, zum Beispiel aus Familienbeziehungen und gleicher Adresse; sie werden also
+      nicht gezählt oder erfragt. Die Werte gelten jeweils zum 31. Dezember und liegen jährlich von 2007 bis 2025
+      vor.
+    inhalt: >-
+      Für jeden der 50 Stadtteile und jedes Jahr steht dort, wie viele Privathaushalte es gibt, wie viele davon aus
+      einer Person bestehen, in wie vielen Kinder leben und wie viele Menschen insgesamt in Privathaushalten leben.
+      Einige weitere Spalten sind in der Quelle nicht beschrieben.
+    nutzen: >-
+      Mit den Daten sehen Sie, wo viele Familien mit Kindern leben, wo viele Menschen allein wohnen und wie sich das
+      seit 2007 verändert hat. Diese App nutzt sie im Thema „Haushalte“, auch mit einer Karte über die Jahre. Das
+      Thema beschreibt, wer in einem Stadtteil wohnt, und zählt nicht zur Mehrfachbelastung.
+    lesen: >-
+      Die Haushalte sind aus Meldedaten geschätzt; Menschen in Heimen und Einrichtungen zählen nicht mit. Die Quelle
+      sagt nicht, bis zu welchem Alter jemand als Kind gilt. Ein Anteil sagt nichts über die Zahl: Ein großer
+      Stadtteil mit kleinem Anteil kann mehr Familien haben als ein kleiner mit großem Anteil.
+
+- id: kommonitor-indikatoren
+  titel: KomMonitor-Indikatoren
+  quelle: kommonitor
+  bereitsteller: Stadt Essen
+  themen: [bevoelkerung, gruen]
+  beschreibung: Rund 361 offen freigegebene Indikatoren zu Demografie, Sozialstruktur, Wohnen und Umwelt auf Stadtteil- und Baublockebene.
+  format: Export aus der Webanwendung
+  raumbezug: Stadtteile, Baublöcke
+  stand: 06/2026
+  lizenz: pruefen
+  seite: https://www.essen.de/dasistessen/connected_essen_1/connected_essen_kommonitor_1.de.html
+  download:
+    art: manuell
+    hinweis: Indikatoren in der Webanwendung exportieren und einlesen. Die REST-API ist geschützt.
+  status: manuell
+  hinweise:
+    - "2026-10-10: Die Seite ist ein Projekttext (Förderung 2017–2021), ohne Link auf die Essener Instanz, ohne Lizenz und ohne Export. Bleibt manuell."
+  erklaerung:
+    herkunft: >-
+      KomMonitor ist ein Beobachtungssystem der Stadt Essen, in dem Kennzahlen aus vielen Bereichen gesammelt
+      werden. Laut Anbieter sind rund 361 Kennzahlen offen freigegeben, Stand Juni 2026. Wie die einzelnen
+      Kennzahlen entstehen, ist je Kennzahl verschieden und hier nicht beschrieben.
+    inhalt: >-
+      Die Kennzahlen betreffen Bevölkerung, soziale Lage, Wohnen und Umwelt. Sie liegen für Stadtteile und für
+      kleinere Baublöcke vor, teils als Zeitreihen. Welche Kennzahlen genau enthalten sind, ist im Katalog nicht
+      aufgeführt.
+    nutzen: >-
+      Die Kennzahlen könnten die Themen der App um soziale Fragen ergänzen, etwa wer in belasteten Stadtteilen
+      wohnt. Diese App nutzt den Datensatz bisher nicht und lädt ihn nicht automatisch; Daten müssten von Hand aus
+      der Webanwendung exportiert werden.
+    lesen: >-
+      Die gefundene Seite der Stadt beschreibt nur das Projekt und führt weder zu den Daten noch zu einer Lizenz
+      oder einem Export. Die Lizenz ist offen und müsste je Kennzahl geprüft werden, bevor Sie Daten weitergeben.
+
+- id: landesdatenbank-essen
+  titel: Landesdatenbank NRW, Tabellen für Essen
+  quelle: ldb
+  bereitsteller: IT.NRW
+  themen: [bevoelkerung, wirtschaft]
+  beschreibung: Amtliche Statistik für Essen (AGS 05113000) zu Bevölkerung, Bautätigkeit, Gewerbe, Tourismus und Finanzen.
+  format: CSV, GENESIS-REST
+  raumbezug: Stadt Essen
+  stand: je Statistik
+  lizenz: dl-de-by-2.0
+  seite: https://www.landesdatenbank.nrw.de/
+  download:
+    art: manuell
+    hinweis: Tabellen als CSV laden oder mit Token über die REST-Schnittstelle abfragen.
+  status: manuell
+
+# ------------------------------------------------------------------ Mobilität
+  hinweise:
+    - "2026-10-10: REST-Schnittstelle https://www.landesdatenbank.nrw.de/ldbnrwws/rest/2020/ antwortet (helloworld/whoami). Lizenz laut Impressum DL-DE BY 2.0. Ob Tabellen ohne Konto abrufbar sind, ist offen, solange keine Tabellen-ID festgelegt ist."
+  erklaerung:
+    herkunft: >-
+      Die Landesdatenbank NRW wird von IT.NRW, dem Statistischen Landesamt, betrieben und enthält amtliche
+      Statistik. Wie aktuell eine Tabelle ist, hängt von der jeweiligen Statistik ab.
+    inhalt: >-
+      Für die Stadt Essen als Ganzes gibt es dort Tabellen zu Bevölkerung, Bautätigkeit, Gewerbe, Tourismus und
+      Finanzen. Die Werte gelten für die ganze Stadt, nicht für einzelne Stadtteile.
+    nutzen: >-
+      Die Tabellen eignen sich, um Essen insgesamt über die Jahre zu beschreiben oder mit anderen Städten zu
+      vergleichen. Diese App nutzt den Datensatz bisher nicht und lädt ihn nicht automatisch.
+    lesen: >-
+      Es ist noch keine bestimmte Tabelle ausgewählt, und ob sich Tabellen ohne Benutzerkonto abrufen lassen, ist
+      offen. Weil es nur Zahlen für die ganze Stadt sind, sagen sie nichts über Unterschiede zwischen den
+      Stadtteilen.
+
+- id: vrr-gtfs
+  titel: VRR-Sollfahrplan (GTFS)
+  quelle: vrr-gtfs
+  bereitsteller: Verkehrsverbund Rhein-Ruhr (VRR)
+  themen: [mobilitaet]
+  beschreibung: Linien, Haltestellen und Fahrten im VRR, darunter die Ruhrbahn. Monatliches Abbild.
+  format: GTFS (ZIP)
+  raumbezug: VRR-Gebiet
+  stand: monatlich
+  lizenz: widerspruechlich
+  seite: https://www.opendata-oepnv.de/ht/de/organisation/verkehrsverbuende/vrr/openvrr/datensaetze
+  download:
+    art: manuell
+    hinweis: Auf der OpenVRR-Seite den aktuellen Fahrplan laden und einlesen.
+  status: manuell
+  hinweise:
+    - "2026-10-10: Download ohne Login möglich, z. B. „Soll-Fahrplandaten VRR – August 2026 IV“ (google_transit.zip, 37 MB, ganzer Verbund). Jede Ausgabe hat eine neue Ressourcen-Adresse; Liste über die CKAN-API https://www.opendata-oepnv.de/api/3/action/package_show?id=496eea5d-d6ef-4dc2-aeb0-d15c4fbf3178."
+    - "Widersprüchliche Lizenz (2026-10-10): OpenVRR-Seite und CKAN „Creative Commons Attribution“ (cc-by); open.nrw „soll-fahrplandaten-vrr-rvr“ „Andere geschlossene Lizenz“; open.nrw „soll-fahrplandaten-vrr-oepnv“ „CC-BY“; dazu eine eigene OSM-Klausel im Text der OpenVRR-Seite."
+  erklaerung:
+    herkunft: >-
+      Den Sollfahrplan veröffentlicht der Verkehrsverbund Rhein-Ruhr für sein ganzes Gebiet, darunter die Essener
+      Ruhrbahn. Es ist der geplante Fahrplan aus der Verwaltung der Verkehrsunternehmen, keine Messung tatsächlicher
+      Fahrten. Jeden Monat erscheint eine neue Ausgabe.
+    inhalt: >-
+      Die Daten liegen im Fahrplanformat GTFS vor. Sie enthalten Linien, Haltestellen und die einzelnen Fahrten im
+      ganzen Verbund. Daraus lässt sich etwa ablesen, wie oft an einer Haltestelle ein Bus oder eine Bahn fährt.
+    nutzen: >-
+      Damit könnte man zeigen, wie gut die Stadtteile an Bus und Bahn angebunden sind. Die App lädt den Datensatz
+      nicht automatisch und nutzt ihn derzeit in keinem Thema; Sie müssten ihn von Hand holen.
+    lesen: >-
+      Der Fahrplan zeigt, was geplant ist, nicht Verspätungen oder Ausfälle. Die Angaben zur Lizenz widersprechen
+      sich je nach Portal; vor einer Weitergabe sollte sie beim Verkehrsverbund schriftlich bestätigt werden.
+
+- id: nextbike-nrw
+  titel: metropolradruhr-Stationen (GBFS)
+  quelle: mobidrom
+  bereitsteller: NRW.Mobidrom
+  themen: [mobilitaet]
+  beschreibung: Stationen und freie Räder von metropolradruhr.
+  format: GBFS
+  raumbezug: Stationen
+  stand: Echtzeit
+  lizenz: pruefen
+  seite: https://www.mobilitaetsdaten.nrw/api/ckan/en/dataset/nextbike-nrw
+  download:
+    art: manuell
+    hinweis: Braucht OAuth2-Zugangsdaten von der Datensatzseite. Noch nicht eingebaut.
+  status: manuell
+
+# ------------------------------------------------------------------ Wahlen
+  hinweise:
+    - "2026-10-10: Die Feeds von mobilitaetsdaten.nrw antworten ohne Zugang mit 401. Die Systemliste auf der Datensatzseite enthält kein metropolradruhr und kein Essen. Für Essen siehe nextbike-essen."
+  erklaerung:
+    herkunft: >-
+      Diese Daten bündelt die Landesplattform NRW.Mobidrom für die Leihräder von nextbike in NRW, darunter
+      metropolradruhr. Sie werden in Echtzeit von den Leihradsystemen geliefert. Welche Lizenz gilt, ist noch nicht
+      geklärt.
+    inhalt: >-
+      Gedacht ist der Datensatz für die Stationen von metropolradruhr und die Zahl der dort gerade freien Räder, im
+      Format GBFS, das Leihradanbieter für solche Angaben nutzen. Ob Essen tatsächlich enthalten ist, ist fraglich:
+      Die Liste der Systeme auf der Datensatzseite nennt weder metropolradruhr noch Essen.
+    nutzen: >-
+      Damit ließe sich zeigen, wo man in Essen ein Leihrad findet. Die App nutzt diesen Datensatz nicht; die
+      Lastenrad-Stationen auf der Karte kommen aus einer anderen Quelle.
+    lesen: >-
+      Die App kann die Daten nicht laden, weil der Dienst ohne Zugang abweist. Echtzeitwerte zeigen nur den
+      Augenblick des Abrufs. Vor jeder Weitergabe müsste die Lizenz beim Anbieter geklärt werden.
+
+- id: nextbike-essen
+  titel: StadtLastenRad Essen, Stationen (GBFS)
+  quelle: nextbike
+  bereitsteller: nextbike GmbH
+  themen: [mobilitaet]
+  beschreibung: Stationen des Systems „nextbike Ruhrgebiet“ (nextbike_mr) mit Name und Lage; derzeit die Lastenrad-Stationen in Essen.
+  format: GBFS (JSON)
+  raumbezug: Stationen in Essen
+  stand: Echtzeit (ttl 60 s)
+  lizenz: cc0-1.0
+  seite: https://www.nextbike.de/stadtlastenrad/de
+  download:
+    art: api
+    url: https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_mr/de/station_information.json
+    datei: nextbike_essen_stationen.json
+  status: geprueft
+  geprueft: "2026-10-10: Abfrage beantwortet (HTTP 200, 21 Stationen, alle im Raum 51,36–51,49 N, 6,94–7,08 O, Namen „… StadtLastenRad“)"
+  hinweise:
+    - "Lizenz aus system_information.json desselben Feeds: license_id CC0-1.0 (2026-10-10)."
+    - "Gefunden über den GBFS-Katalog von MobilityData (systems.csv, „nextbike Ruhrgebiet, nextbike_mr“). Belegung: station_status.json im selben Ordner."
+  erklaerung:
+    herkunft: >-
+      Die Daten veröffentlicht die Firma nextbike, die das Leihradsystem „nextbike Ruhrgebiet“ betreibt. Sie kommen
+      aus dem laufenden Betrieb und werden etwa jede Minute erneuert. Der Anbieter stellt sie ohne Einschränkungen
+      zur freien Nutzung bereit.
+    inhalt: >-
+      Der Datensatz enthält die Stationen des Systems mit Name und Lage; derzeit sind das die Stationen des
+      StadtLastenRads in Essen, bei der Prüfung 21 Stück. Wie viele Räder gerade an einer Station stehen, steht in
+      einer eigenen Datei, die hier nicht geladen wird.
+    nutzen: >-
+      Mit den Daten sehen Sie, wo man in Essen ein Lastenrad ausleihen kann. Diese App zeigt die Stationen als
+      Punkte mit dem Namen „Lastenrad-Stationen“ auf der Karte.
+    lesen: >-
+      Die Daten sind eine Momentaufnahme vom Zeitpunkt des Ladens; Stationen können hinzukommen oder wegfallen. Sie
+      sagen nichts darüber, wie oft die Räder genutzt werden.
+
+- id: wahl-bundestag-2025
+  titel: Bundestagswahl 2025 in Essen
+  quelle: wahl
+  bereitsteller: Stadt Essen, Amt für Statistik und Wahlen
+  themen: [wahlen]
+  beschreibung: Ergebnisse auf allen Gebietsebenen bis zum Stimmbezirk, dazu Wahllokale und Straßenzuordnung.
+  format: CSV (Semikolon)
+  raumbezug: Stadt bis Stimmbezirk
+  stand: 2025
+  lizenz: pruefen
+  seite: https://webapps-extern.essen.de/wahlergebnisse/BW2025/05113000/praesentation/opendata.html
+  download:
+    art: datei
+    url: https://webapps-extern.essen.de/wahlergebnisse/BW2025/05113000/daten/opendata/Open-Data-05113000-Wahl-zum-Deutschen-Bundestag-Stadtteil.csv
+    groesse_mb: 0.01
+  status: geprueft
+  geprueft: "2026-10-10: geladen (Open-Data-05113000-Wahl-zum-Deutschen-Bundestag-Stadtteil.csv, 0.0 MB) und inspiziert: CSV mit Semikolon, 53 Spalten, 50 Stadtteile"
+  hinweise:
+    - "2026-10-10: Ergebnis je Stadtteil, gefunden über open_data.json der Seite, HTTP 200 (11.320 B). Varianten für Stadtbezirk und Wahlbezirk im selben Ordner. Weder Seite noch JSON nennen eine Lizenz."
+    - "2026-10-11: Im Portal opendata.essen.de stehen die Übersicht „wahlen-essen“ und die Europawahl 2024 im gleichen Dateiformat (Open-Data-05113000-…, Amt für Statistik) unter DL-DE BY 2.0. Für die Bundestagswahl 2025 selbst gibt es dort keinen Datensatz; deshalb weiter prüfen statt übertragen."
+  erklaerung:
+    herkunft: >-
+      Die Ergebnisse veröffentlicht das Amt für Statistik und Wahlen der Stadt Essen auf seiner Seite zu den
+      Wahlergebnissen. Es sind die ausgezählten Stimmen der Bundestagswahl 2025.
+    inhalt: >-
+      Die Ergebnisse gibt es für alle Gebietsebenen bis hinunter zum Stimmbezirk, dazu Wahllokale und welche Straße
+      zu welchem Bezirk gehört. Die geladene Datei enthält das Ergebnis je Stadtteil für alle 50 Stadtteile.
+    nutzen: >-
+      Mit den Daten lässt sich vergleichen, wie in den einzelnen Stadtteilen gewählt wurde. Diese App nutzt den
+      Datensatz bisher in keinem Thema.
+    lesen: >-
+      Weder die Seite noch die Datei nennen eine Lizenz. Für frühere Wahlen gilt im Open-Data-Portal der Stadt eine
+      offene Lizenz, für diese Wahl ist das aber nicht belegt; vor einer Weitergabe muss das geklärt werden.
+
+- id: wahl-kommunal-2025
+  titel: Kommunalwahl 2025 in Essen (amtlich)
+  quelle: wahlnrw
+  bereitsteller: IT.NRW
+  themen: [wahlen]
+  beschreibung: Amtliches Ergebnis der Ratswahl vom 14.09.2025.
+  format: Text (Semikolon)
+  raumbezug: Stadt Essen
+  stand: 2025
+  lizenz: pruefen
+  seite: https://www.wahlergebnisse.nrw/kommunalwahlen/2025/aktuell/a113000kw2500.shtml
+  download:
+    art: datei
+    url: https://www.wahlergebnisse.nrw/kommunalwahlen/2025/aktuell/txtdateien/a113000kw2500.txt
+    groesse_mb: 0.01
+  status: geprueft
+  geprueft: "2026-10-10: geladen (a113000kw2500.txt, 0.0 MB) und inspiziert: Textdatei, 2,8 kB"
+  hinweise:
+    - "2026-10-10: Link „Download der Tabellen als Textdatei“ auf der Seite, HTTP 200 (2.788 B). Enthält nur das Endergebnis der Ratswahl für die ganze Stadt, mit zweizeiligem Kopf. Keine Lizenzangabe im Impressum."
+  erklaerung:
+    herkunft: >-
+      Das amtliche Ergebnis veröffentlicht IT.NRW, das Statistische Landesamt, auf seiner Seite zu den
+      Wahlergebnissen in NRW. Es ist das ausgezählte Ergebnis der Ratswahl vom 14. September 2025.
+    inhalt: >-
+      Die kleine Textdatei enthält nur das Endergebnis der Ratswahl für die ganze Stadt Essen. Ergebnisse für
+      Stadtteile oder Stimmbezirke sind nicht enthalten.
+    nutzen: >-
+      Mit dem Datensatz können Sie das amtliche Gesamtergebnis der Ratswahl in Essen nachlesen. Diese App nutzt ihn
+      bisher in keinem Thema.
+    lesen: >-
+      Weil nur ein Ergebnis für die ganze Stadt vorliegt, sind keine Vergleiche zwischen Stadtteilen möglich. Eine
+      Lizenz ist nicht ausgewiesen; vor einer Weitergabe muss das geklärt werden.

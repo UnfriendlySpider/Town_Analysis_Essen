@@ -1,0 +1,37 @@
+# Landbedeckung NRW (Geobasis NRW): welche Layer und Codes zu welcher Gruppe gehören.
+#
+# Das GeoPackage hat je Hauptklasse einen Layer. Die Unterklassen stehen in Textfeldern mit Codes.
+# Bedeutung der Codes laut den mitgelieferten QGIS-Stildateien (Filter und Beschriftung):
+#   lb_krautigevegetation.vegetationsmerkmal: 1000 Gras, 2000 Röhricht/Schilf, 3000 Getreide/Staudengewächse/Farne
+#   lb_holzigevegetation.vegetationsmerkmal: 4000 Bäume (blattform 1000 Laub, 2000 Nadel), 5000 Gehölz,
+#                                             6000 Büsche/Sträucher
+#   lb_binnengewaesser.fliesseigenschaft:   1000 fließend, 2000 stehend
+
+datensatz: landbedeckung-nrw
+geprueft: true
+quelle: >-
+  QGIS-Stildateien im ZIP (lb_krautigevegetation.qml, lb_holzigevegetation.qml, lb_binnengewaesser.qml, Regeln mit
+  filter und label); Legende des WMS https://www.wms.nrw.de/geobasis/wms_nw_landbedeckung (Ebene nw_landbedeckung)
+vermerk: >-
+  2026-10-10: Codes aus den Stildateien gelesen und mit der WMS-Legende verglichen. In Essen decken die sechs
+  Layer 21.024,2 von 21.026,9 ha ab (ohne Überschneidung); Vegetation 13.400 ha, davon Bäume 5.762 ha.
+
+# Gruppe je Layer, bei Vegetation je Code. Ein Code ohne Eintrag führt zum Abbruch.
+gruppen:
+  lb_hochbau: hochbau
+  lb_tiefbau: tiefbau
+  lb_lockermaterial: lockermaterial
+  lb_binnengewaesser: wasser
+  lb_krautigevegetation:
+    feld: vegetationsmerkmal
+    werte:
+      "1000": gras
+      "2000": kraut_sonstige
+      "3000": kraut_sonstige
+  lb_holzigevegetation:
+    feld: vegetationsmerkmal
+    werte:
+      "4000": baeume
+      "5000": gehoelz
+      "6000": gehoelz
+gruen: [gras, kraut_sonstige, baeume, gehoelz]

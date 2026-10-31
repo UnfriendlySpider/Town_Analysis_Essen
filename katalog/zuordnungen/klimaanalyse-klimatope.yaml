@@ -1,0 +1,34 @@
+# Klimaanalyse NRW 2026, Klimatopkarte (LANUK): Bedeutung der Klimatoptypen im Layer PL_KY_KLIMATOP.
+#
+# Jede Fläche trägt den Klimatop zweimal: als Zahl (KT_R02_2) und als Text (Klimatoptyp). Die Analyse liest den
+# Text, prüft die Zahl dagegen und bricht bei unbekanntem Text oder Abweichung ab (E-009).
+
+datensatz: klimaanalyse-klimatope
+geprueft: true
+quelle: >-
+  Methodik_Planung_Klimaanalyse_Klimatopkarte.pdf (LANUK, Stand 03/2026, im Datensatz klimaanalyse-beschreibung):
+  Tabelle 2 „Primäre Zuordnung der Objektarten zu den Klimatopen“ (Codes 1–10, Straßenverkehr −999,
+  Bahnverkehr −99, keine Angabe −9) und Tabelle 3 „Flächenanteile der Klimatope in NRW“ (Nr. und Klimatoptyp).
+  Verfeinerung laut Text: 5 → 6 bei 20–40 % Überbauung, → 7 bei über 40 %; 9 → 10 bei über 70 % Versiegelung und
+  über 20 % Überbauung; 4 = Grün- und Freiflächen im 50-m-Siedlungspuffer.
+vermerk: >-
+  2026-10-12: Kreuztabelle Klimatoptyp × KT_R02_2 über alle 23.761 Flächen im Rechteck um Essen ohne Abweichung,
+  12 Typen, „keine Angabe“ (−9) kommt nicht vor.
+
+feld: KT_R02_2
+textfeld: Klimatoptyp
+# gruppe: zum Zusammenfassen in der App; dicht = Klimatope der dichten Bebauung laut Verfeinerungsregeln oben
+klassen:
+  1: {text: "Gewässer-, Seeklima", gruppe: gruen_wasser}
+  2: {text: "Freilandklima", gruppe: gruen_wasser}
+  3: {text: "Waldklima", gruppe: gruen_wasser}
+  4: {text: "Klima innerstädtischer Grünflächen", gruppe: gruen_wasser}
+  5: {text: "Vorstadtklima", gruppe: locker}
+  6: {text: "Stadtrandklima", gruppe: locker}
+  7: {text: "Stadtklima", gruppe: dicht}
+  8: {text: "Innenstadtklima", gruppe: dicht}
+  9: {text: "Gewerbe-, Industrieklima (offen)", gruppe: locker}
+  10: {text: "Gewerbe-, Industrieklima (dicht)", gruppe: dicht}
+  -999: {text: "Straßenverkehr", gruppe: verkehr}
+  -99: {text: "Bahnverkehr", gruppe: verkehr}
+  -9: {text: "Keine Angabe", gruppe: keine}

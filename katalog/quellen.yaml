@@ -1,0 +1,946 @@
+# Quellen: Anbieter, Portale und Schnittstellen mit Daten zu Essen.
+# Einzelne Datensätze stehen in datensaetze.yaml und verweisen über `quelle` hierher.
+# Aufbau und Felder: docs/katalog.md. Nach Änderungen: uv run essen katalog --pruefen
+
+quellen:
+
+- id: essen-opendata
+  name: Open-Data-Portal Stadt Essen
+  kurz: opendata.essen.de
+  ebene: stadt
+  themen: [bevoelkerung, wahlen, geo, mobilitaet, klima, luft, wasser, gruen, wirtschaft, verwaltung, kultur]
+  beschreibung: Zentrales Portal der Stadt, seit 2019 online und laufend gepflegt. Zwölf Themenkategorien, die größten
+    sind Geo, Politik und Wahlen, Infrastruktur und Verkehr.
+  zugang: [DKAN-API (CKAN-Stil), Datastore-Abfrage, CSV · GeoJSON · SHP]
+  lizenz: gemischt
+  lizenz_hinweis: DL-DE-Zero-2.0 (überwiegend); Einzelne Datensätze unter DL-DE-BY-2.0, z. B. Verwaltungsgrenzen
+  aktualitaet: periodisch, je Datensatz
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  endpunkte:
+  - titel: Liste aller Datensätze
+    url: https://opendata.essen.de/api/3/action/package_list
+  - titel: Alle Datensätze mit Ressourcen
+    url: https://opendata.essen.de/api/3/action/current_package_list_with_resources
+  - titel: Einzelner Datensatz
+    url: https://opendata.essen.de/api/3/action/package_show?id=<datensatz-id>
+  - titel: Datastore mit Filter auf Stadtteile
+    url: https://opendata.essen.de/api/action/datastore/search.json?resource_id=<RessourceID>&limit=100&filters[Stadtteil]=Kray,Werden
+  links:
+  - titel: Portal
+    url: https://opendata.essen.de/
+  - titel: API-Anleitung
+    url: https://opendata.essen.de/dkan-api
+  - titel: FAQ zur Lizenz
+    url: https://opendata.essen.de/faq
+  beispiele:
+  - 'Verwaltungsgrenzen: Stadt, Bezirke, Stadtteile'
+  - Privathaushalte nach Stadtteilen ab 2007
+  - Niederlassungen im Unternehmensregister nach Stadtteilen ab 2021
+  - Radverkehrszählungen, quartalsweise
+  - Messbereiche der Geschwindigkeitsüberwachung, wöchentlich
+  - Bewohnerparkbereiche, Kitas, Kühlorte, Starkregenkarte, Stolpersteine
+  hinweise:
+  - Lizenz jeder Ressource im Feld license auslesen und für BY-Daten die Quellenangabe erzeugen.
+  - Rate Limits sind nicht dokumentiert. Abrufe zwischenspeichern.
+  - Quartalsdateien erscheinen teils verspätet. Vor dem Einbau die neuesten Zeiträume prüfen.
+  kontakt: [opendata@essen.de]
+
+- id: essen-geo
+  name: Geodienste der Stadt Essen
+  kurz: Geoportal · Amt 62
+  ebene: stadt
+  themen: [geo, gruen, laerm, energie]
+  beschreibung: Karten- und Objektdienste des Amts für Geoinformation, Vermessung und Kataster. Die offenen Dienste
+    sind als Ressourcen im Open-Data-Portal verlinkt.
+  zugang: [WMS, WFS, GeoJSON (WGS84)]
+  lizenz: dl-de-zero-2.0
+  lizenz_hinweis: meist DL-DE-Zero-2.0; Angabe je Datensatz prüfen
+  aktualitaet: tagesaktuell (WFS)
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  links:
+  - titel: Geoportal
+    url: https://www.essen.de/dasistessen/geoportal/uebersicht.de.html
+  - titel: Geoportal A–Z
+    url: https://www.essen.de/dasistessen/geoportal/A_bis_Z.de.html
+  - titel: Hauskoordinaten
+    url: https://opendata.essen.de/dataset/amtliche-hauskoordinaten-essen
+  beispiele:
+  - 'Katasterkarte (WFS): Gebäude und Flurstücke aus ALKIS'
+  - 'Amtliche Hauskoordinaten: WFS in ETRS89 und GeoJSON in WGS84'
+  - Amtliche Basiskarte und Stadtplan (WMS)
+  - Gesamtflächennutzungsplan GFNP (WMS)
+  hinweise:
+  - Die Dienst-URLs stehen in den Ressourcen der jeweiligen Datensätze auf opendata.essen.de.
+  - Für Webkarten das GeoJSON in WGS84 nehmen. Das Koordinatensystem des Hauskoordinaten-WFS macht in QGIS und R
+    Probleme.
+  - Das Geoportal A–Z zeigt viele weitere Fachkarten (Baustellen, Lärm, Solardachkataster, Stadtbäume, Umweltzonen,
+    Wärmeplanung). Nicht jede hat einen offenen Dienst.
+  kontakt: [geoinformation@amt62.essen.de]
+
+- id: kommonitor
+  name: KomMonitor Essen
+  kurz: kleinräumiges Monitoring
+  ebene: stadt
+  themen: [bevoelkerung, gruen]
+  beschreibung: Open-Source-Monitoringsystem mit rund 361 offen freigegebenen Indikatoren (Stand 06.2026) zu Demografie,
+    Sozialstruktur, Wohnen und Umwelt, auf Stadtteil- und Baublockebene mit Zeitreihen.
+  zugang: [Webanwendung, Export, REST-API (geschützt)]
+  lizenz: pruefen
+  lizenz_hinweis: offen freigegebene Indikatoren; Lizenz je Indikator prüfen
+  aktualitaet: periodisch
+  konto: auf-anfrage
+  konto_hinweis: API nur auf Anfrage
+  eignung: 2
+  links:
+  - titel: KomMonitor bei essen.de
+    url: https://www.essen.de/dasistessen/connected_essen_1/connected_essen_kommonitor_1.de.html
+  beispiele:
+  - Bevölkerungsstruktur und Altersgruppen
+  - Sozialindikatoren
+  - Wohnen und Wohnumfeld
+  - Umweltindikatoren
+  hinweise:
+  - Inhaltlich die beste Quelle für einen Sozialatlas. Der technische Zugang ist der Engpass.
+  - Für einen API-Zugang direkt beim Amt für Geoinformation, Vermessung und Kataster anfragen.
+
+- id: wahl
+  name: Wahlergebnisse Essen
+  kurz: votemanager · Amt für Statistik
+  ebene: stadt
+  themen: [wahlen]
+  beschreibung: Je Wahl eine Open-Data-Seite mit CSV-Dateien für alle Gebietsebenen bis zum Stimmbezirk, dazu Wahllokale
+    und Straßenzuordnung.
+  zugang: ['CSV (Semikolon, UTF-8)']
+  lizenz: pruefen
+  lizenz_hinweis: offen, Lizenz je Wahl prüfen
+  aktualitaet: laufend am Wahlabend
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  endpunkte:
+  - titel: 'Beispiel Bundestagswahl 2025 (Muster: Wahlkürzel/AGS)'
+    url: https://webapps-extern.essen.de/wahlergebnisse/BW2025/05113000/praesentation/opendata.html
+  links:
+  - titel: CSV-Seite BW 2025
+    url: https://webapps-extern.essen.de/wahlergebnisse/BW2025/05113000/praesentation/opendata.html
+  - titel: Wahlergebnisse im Vergleich
+    url: https://www.essen.de/rathaus/wahlen_und_abstimmungen/wahlen/wahlergebnisse_im_vergleich.de.html
+  beispiele:
+  - Ergebnisse auf allen Gebietsebenen bis Stimmbezirk
+  - opendata-wahllokale.csv
+  - opendata-strassen.csv
+  - Wahlatlas mit Ergebnissen seit 2004
+  hinweise:
+  - Für Live-Dashboards am Wahlabend geeignet, da die Dateien laufend aktualisiert werden.
+  - Wahlbezirks-Shapes (z. B. Kommunalwahl 2025) liegen auf opendata.essen.de.
+  - 'Stadt und IT.NRW runden teils verschieden (SPD Ratswahl 2025: 22,7 % bzw. 22,6 %). Quelle im Dashboard angeben.'
+
+- id: ris
+  name: Ratsinformationssystem Essen
+  kurz: ris.essen.de · OParl
+  ebene: stadt
+  themen: [wahlen, verwaltung]
+  beschreibung: SD.NET RIM 4 mit OParl-Schnittstelle. Liefert Sitzungen, Gremien, Vorlagen und Beschlüsse als verlinktes
+    JSON.
+  zugang: [OParl-JSON]
+  lizenz: pruefen
+  lizenz_hinweis: öffentliche RIS-Daten, Lizenz nicht ausgewiesen
+  aktualitaet: laufend (zuletzt 05.10.2026)
+  konto: ohne
+  konto_hinweis: ohne Konto (OParl-Standard)
+  eignung: 2
+  endpunkte:
+  - titel: Typisches Muster bei SD.NET RIM, für Essen ungeprüft
+    url: https://ris.essen.de/<pfad>/webservice/oparl/v1/system
+  links:
+  - titel: RIS Essen
+    url: https://ris.essen.de/
+  - titel: oparl-cli
+    url: https://github.com/maschinenlesbar-org/oparl-cli
+  beispiele:
+  - Sitzungen nach Gremium und Datum
+  - Vorlagen und Beschlüsse
+  - Mitglieder und Fraktionen
+  hinweise:
+  - Die exakte Basis-URL über den Menüpunkt „Schnittstelle OParl“ im Browser ablesen. Die Seite sperrt automatisierte
+    Abrufe.
+  - Das Community-Tool oparl-cli führt Essen als bekannten Server.
+
+- id: ruhr
+  name: Open Data Portal Ruhr
+  kurz: opendata.ruhr · RVR
+  ebene: region
+  themen: [bevoelkerung, geo, mobilitaet, klima, gruen, wahlen]
+  beschreibung: CKAN-Portal des Regionalverbands Ruhr mit 3.133 Datensätzen, davon 111 der Stadt Essen. Spiegelt
+    die Essener Daten und erlaubt Vergleiche zwischen Ruhrgebietsstädten über eine einzige API.
+  zugang: [CKAN-API, 'DCAT (TTL, JSON-LD)']
+  lizenz: gemischt
+  lizenz_hinweis: je Datensatz
+  aktualitaet: periodisch
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  endpunkte:
+  - titel: Datensätze der Stadt Essen
+    url: https://opendata.ruhr/api/3/action/package_search?fq=organization:essen&rows=100
+  - titel: DCAT-Katalog
+    url: https://opendata.ruhr/catalog.jsonld
+  - titel: OParl des RVR
+    url: https://rvr-online.gremien.info/oparl
+  - titel: WFS Synthetische Klimafunktionskarte (CC BY-NC 4.0)
+    url: https://geodaten.metropoleruhr.de/klima/synth_klima_fk_v8
+  links:
+  - titel: Portal
+    url: https://opendata.ruhr/
+  - titel: FAQ
+    url: https://opendata.ruhr/faq
+  beispiele:
+  - 'Geoportal Ruhr: 385 Datensätze, u. a. POI, Schutzgebiete, Denkmäler, Stadtklima'
+  - VRR-Sollfahrplan (GTFS)
+  - Essener Datensätze als Spiegel
+  hinweise:
+  - Ideal, wenn das Dashboard Essen mit Bochum, Duisburg oder Dortmund vergleichen soll.
+  - Die Klimaanalysekarten des RVR (WFS geodaten.metropoleruhr.de) stehen unter CC BY-NC 4.0, also nicht kommerziell.
+  kontakt: [opendata@rvr.ruhr]
+
+- id: opennrw
+  name: Open.NRW
+  kurz: Landeskatalog NRW
+  ebene: land
+  themen: [geo, klima, luft, laerm, wasser, gruen, mobilitaet, verwaltung]
+  beschreibung: Zentraler CKAN-Katalog des Landes mit LANUK-Daten, Geobasisdaten, kommunalen Datensätzen und dem
+    landesweiten ÖPNV-Sollfahrplan (GTFS, monatlich).
+  zugang: [CKAN-API]
+  lizenz: dl-de-zero-2.0
+  lizenz_hinweis: meist DL-DE-Zero-2.0; Angabe je Datensatz prüfen
+  aktualitaet: je Datensatz
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 2
+  endpunkte:
+  - titel: Suche (CKAN-Standardpfad)
+    url: https://ckan.open.nrw.de/api/3/action/package_search?q=essen
+  links:
+  - titel: Open.NRW
+    url: https://open.nrw/
+  - titel: Soll-Fahrplan NRW
+    url: https://open.nrw/dataset/soll-fahrplandaten-nrw-oepnv
+  beispiele:
+  - Soll-Fahrplandaten NRW (GTFS, monatlich)
+  - LANUK-Umweltdaten
+  - Geobasis NRW
+  hinweise:
+  - Gut als Suchindex. Für Abrufe meist direkt beim Originalanbieter bleiben.
+
+- id: geobasis
+  name: Geobasis NRW
+  kurz: Bezirksregierung Köln · GEOportal.NRW
+  ebene: land
+  themen: [geo, energie]
+  beschreibung: 'Amtliche Geobasisdaten für ganz NRW: ALKIS, Orthophotos, Höhenmodelle, topografische Karten und
+    3D-Gebäudemodelle in LoD1 und LoD2.'
+  zugang: [OGC API Features, WMS/WFS, I3S · 3D Tiles, Download]
+  lizenz: dl-de-zero-2.0
+  lizenz_hinweis: DL-DE-Zero-2.0; Jede Nutzung ohne Bedingungen zulässig
+  aktualitaet: periodisch
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  endpunkte:
+  - titel: OGC API Features 3D-Gebäude (seit 05/2025)
+    url: https://ogc-api.nrw.de/3dg/v1
+  - titel: Download-Verzeichnis
+    url: https://www.opengeodata.nrw.de/produkte/geobasis/
+  - titel: I3S-SceneServer LoD2
+    url: https://www.gis.nrw.de/geobasis/LOD2/SceneServer
+  links:
+  - titel: 3D-Gebäudemodelle
+    url: https://www.bezreg-koeln.nrw.de/geobasis-nrw/produkte-und-dienste/3d-gebaeudemodelle
+  - titel: Downloads
+    url: https://www.opengeodata.nrw.de/produkte/geobasis/
+  beispiele:
+  - 3D-Gebäudemodelle LoD1/LoD2
+  - Digitale Orthophotos (DOP)
+  - Gelände- und Oberflächenmodelle (DGM, DOM)
+  - ALKIS
+  hinweise:
+  - LoD2-Grundlage ist der Laserscan-Stand 2019 bis 2024.
+  - Gut für 3D-Stadtansichten, Gebäudebestand und Solarpotenzial.
+
+- id: ldb
+  name: Landesdatenbank NRW
+  kurz: IT.NRW · GENESIS
+  ebene: land
+  themen: [bevoelkerung, wirtschaft, verwaltung]
+  beschreibung: 'Amtliche Statistik auf Gemeindeebene für Essen (AGS 05113000): Bevölkerung, Bautätigkeit, Gewerbe,
+    Tourismus und Finanzen.'
+  zugang: [GENESIS-REST, CSV-Tabellen]
+  lizenz: dl-de-by-2.0
+  lizenz_hinweis: DL-DE-BY-2.0
+  aktualitaet: je Statistik
+  konto: registrierung
+  konto_hinweis: kostenlose Registrierung, Token
+  eignung: 3
+  endpunkte:
+  - titel: Schnittstellenbeschreibung (WADL)
+    url: https://www.landesdatenbank.nrw.de/ldbnrwws/rest/2020/application.wadl
+  - titel: Tabellen-Download als CSV
+    url: https://www.landesdatenbank.nrw.de/ldbnrw/online?operation=download&code=<Tabellencode>&option=csv
+  links:
+  - titel: Landesdatenbank
+    url: https://www.landesdatenbank.nrw.de/
+  - titel: restatis
+    url: https://github.com/CorrelAid/restatis
+  beispiele:
+  - Bevölkerungsstand und Bewegungen
+  - Baugenehmigungen und Fertigstellungen
+  - Gewerbeanzeigen
+  - Gästeankünfte und Übernachtungen
+  - Gemeindefinanzen
+  hinweise:
+  - Außer whoami brauchen alle Anfragen eine Anmeldung. Request-Limits laut Doku Kap. 1.7.
+  - Das R-Paket restatis (CorrelAid) spricht Landesdatenbank NRW, Destatis, Regionalstatistik und Zensus 2022 an.
+
+- id: wahlnrw
+  name: wahlergebnisse.nrw
+  kurz: IT.NRW
+  ebene: land
+  themen: [wahlen]
+  beschreibung: Amtliche Ergebnisse der Kommunal- und Landtagswahlen, darunter die Kommunalwahl 2025 für die kreisfreie
+    Stadt Essen.
+  zugang: [HTML-Tabellen, Downloads]
+  lizenz: pruefen
+  lizenz_hinweis: amtlich, Lizenz nicht ausgewiesen
+  aktualitaet: nach Wahlen
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 2
+  links:
+  - titel: Essen, Kommunalwahl 2025
+    url: https://www.wahlergebnisse.nrw/kommunalwahlen/2025/aktuell/a113000kw2500.shtml
+  beispiele:
+  - 'Ratswahl 14.09.2025: Beteiligung 55,5 %, CDU 30,2 %, SPD 22,6 %, AfD 16,9 %, Grüne 12,3 %'
+  hinweise:
+  - Gut als amtlicher Abgleich für die städtischen CSV-Daten.
+
+- id: lanuk
+  name: LANUK – Landesamt für Natur, Umwelt und Klima NRW
+  kurz: vormals LANUV · Klima, Luft, Lärm, Wasser, Boden
+  ebene: land
+  themen: [klima, luft, laerm, wasser, gruen]
+  beschreibung: Landesumweltamt NRW. Veröffentlicht die Klimaanalyse NRW, das Luftqualitätsmessnetz (LUQS mit 52
+    Stationen im Basismessnetz und rund 100 weiteren Messstellen), die Umgebungslärmkartierung, hydrologische Daten
+    und Bodendaten. Downloads über OpenGeodata.NRW, Karten über wms.nrw.de.
+  zugang: [Downloads (OpenGeodata.NRW), WMS (wms.nrw.de), 'CSV (Luftqualität, letzte 24 h)']
+  lizenz: dl-de-zero-2.0
+  lizenz_hinweis: DL-DE-Zero-2.0 für die Downloads auf OpenGeodata.NRW; einzelne Fachdaten (z. B. Solarkataster)
+    prüfen
+  aktualitaet: je Datensatz, Luftqualität stündlich
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  endpunkte:
+  - titel: Klimaanalyse NRW (Downloads)
+    url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/
+  - titel: WMS Klimaanpassung Klimaanalyse
+    url: https://www.wms.nrw.de/umwelt/klimaanpassung_klimaanalyse?REQUEST=GetCapabilities&SERVICE=WMS
+  - titel: Verzeichnis aktuelle Luftqualität
+    url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/luftqualitaet/luqs/aktuelle_luftqualitaet/
+  - titel: Messwerte der letzten 24 Stunden
+    url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/luftqualitaet/luqs/aktuelle_luftqualitaet/OpenKontiLUQS_aktuelle-messwerte-24h.csv
+  links:
+  - titel: Datenverzeichnis
+    url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/luftqualitaet/luqs/aktuelle_luftqualitaet/index.html
+  beispiele:
+  - 'Klimaanalyse NRW 2026: Nacht, Tag, Klimatope, Planungshinweise, Betroffenheit'
+  - 'Luftqualität: PM10, NO₂, NO, O₃, SO₂, Meteorologie'
+  - Umgebungslärmkartierung Runde 4
+  - Hydrologische Rohdaten (HYGON)
+  - Bodenversiegelung
+  hinweise:
+  - Die Werte sind vorläufig und nicht validiert. Im Dashboard so kennzeichnen.
+  - Die Datei OpenKontiLUQS_aktuelle-messwerte-24h.csv war bei der Prüfung im Oktober 2026 seit dem 21.08.2026 nicht
+    aktualisiert.
+
+- id: mobidrom
+  name: mobilitaetsdaten.nrw
+  kurz: NRW.Mobidrom
+  ebene: land
+  themen: [mobilitaet]
+  beschreibung: Landesplattform für Mobilitätsdaten. Bündelt die GBFS-Feeds von nextbike NRW, darunter metropolradruhr
+    mit Stationen in Essen.
+  zugang: [GBFS 2.3 / 3.0, DATEX II Parken (Profil)]
+  lizenz: pruefen
+  lizenz_hinweis: siehe Datensatzseite
+  aktualitaet: Echtzeit
+  konto: oeffentlicher-schluessel
+  konto_hinweis: OAuth2, Zugangsdaten öffentlich auf der Datensatzseite
+  eignung: 3
+  links:
+  - titel: nextbike NRW (GBFS)
+    url: https://www.mobilitaetsdaten.nrw/api/ckan/en/dataset/nextbike-nrw
+  beispiele:
+  - Stationen und freie Räder von metropolradruhr
+  - Fahrzeugstatus
+  hinweise:
+  - 'Client Credentials: Client-ID gbfs-api, Token-URL und Secret stehen auf der Datensatzseite.'
+  - Ob Essener Parkhäuser über das DATEX-II-Parkprofil liefern, ist nicht geprüft.
+  kontakt: [datenplattform@mobidrom.nrw]
+
+- id: uba
+  name: UBA Luftdaten-API
+  kurz: Umweltbundesamt
+  ebene: bund
+  themen: [luft]
+  beschreibung: Messwerte, Luftqualitätsindex, Prognosen und Jahresbilanzen aller deutschen Messstationen, darunter
+    die Essener Stationen mit dem Präfix DENW.
+  zugang: [REST v4 (v3 parallel), JSON · CSV]
+  lizenz: dl-de-by-2.0
+  lizenz_hinweis: DL-DE-BY-2.0; Quellenangabe nach UBA-Vorgabe
+  aktualitaet: stündlich
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  endpunkte:
+  - titel: API-Dokumentation
+    url: https://luftdaten.umweltbundesamt.de/api/air-data/v3/doc
+  - titel: Luftqualität einer Station
+    url: https://luftdaten.umweltbundesamt.de/api-proxy/airquality/json?date_from=<JJJJ-MM-TT>&date_to=<JJJJ-MM-TT>&time_from=<h>&time_to=<h>&station=<Code>
+  links:
+  - titel: Luftdaten-Portal
+    url: https://luftdaten.umweltbundesamt.de/
+  - titel: OpenAPI bei bund.dev
+    url: https://github.com/bundesAPI/luftqualitaet-api
+  beispiele:
+  - Messwerte (measures)
+  - Luftqualitätsindex
+  - Prognosen (airqualityforecast)
+  - Jahresbilanzen (annualbalances)
+  hinweise:
+  - Daten ab 2016. Werte des laufenden Jahres sind ungeprüft, finale Daten folgen im Juni des Folgejahres.
+  - Die Stationscodes für Essen über den stations-Endpunkt ermitteln.
+
+- id: pegel
+  name: Pegelonline
+  kurz: Wasserstraßen- und Schifffahrtsverwaltung
+  ebene: bund
+  themen: [wasser]
+  beschreibung: Wasserstände und Abflüsse an Bundeswasserstraßen mit Zeitreihen der letzten 30 Tage.
+  zugang: [REST v2 JSON/CSV, WMS/WFS]
+  lizenz: dl-de-zero-2.0
+  lizenz_hinweis: DL-DE-Zero-2.0
+  aktualitaet: Echtzeit, 30 Tage rückwirkend
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 2
+  endpunkte:
+  - titel: Pegel im Umkreis von 20 km um Essen
+    url: https://www.pegelonline.wsv.de/webservices/rest-api/v2/stations.json?latitude=51.45&longitude=7.01&radius=20&includeTimeseries=true&includeCurrentMeasurement=true
+  links:
+  - titel: REST-API-Doku
+    url: https://pegelonline.wsv.de/webservice/dokuRestapi
+  beispiele: [Aktueller Wasserstand je Pegel, Zeitreihen der letzten 30 Tage]
+  hinweise:
+  - Deckt nur Bundeswasserstraßen ab. Die Ruhrpegel im Stadtgebiet betreiben überwiegend Land und Ruhrverband. Per
+    Umkreisabfrage prüfen, was enthalten ist.
+
+- id: destatis
+  name: Destatis GENESIS-Online
+  kurz: Statistisches Bundesamt
+  ebene: bund
+  themen: [bevoelkerung, wirtschaft]
+  beschreibung: Bundesstatistik. Die Weboberfläche ist ohne Registrierung nutzbar, die REST-Schnittstelle braucht
+    Login oder Token (Doku 5.1 vom 01.06.2026).
+  zugang: [GENESIS-REST (JSON)]
+  lizenz: dl-de-by-2.0
+  lizenz_hinweis: DL-DE-BY-2.0
+  aktualitaet: je Statistik
+  konto: registrierung
+  konto_hinweis: Login oder Token
+  eignung: 2
+  endpunkte:
+  - titel: Basis-URL
+    url: https://genesis.destatis.de/genesisWS/rest/2020/
+  links:
+  - titel: API und Weboberfläche
+    url: https://www.destatis.de/DE/Service/OpenData/genesis-api-webservice-oberflaeche.html
+  beispiele: [Bundesweite Vergleichsreihen]
+  hinweise:
+  - Für Essen-spezifische Werte meist die Landesdatenbank NRW oder Regionalstatistik nutzen.
+
+- id: ba
+  name: Statistik der Bundesagentur für Arbeit
+  kurz: BA-Statistik
+  ebene: bund
+  themen: [wirtschaft]
+  beschreibung: Arbeitsmarktdaten für die kreisfreie Stadt Essen. Seit Dezember 2025 auch per Schnittstelle, zum
+    Beispiel die Eckwerte Beschäftigung.
+  zugang: [Eckwerte-API, Tabellen]
+  lizenz: pruefen
+  lizenz_hinweis: Nutzungsbedingungen der BA
+  aktualitaet: monatlich
+  konto: unklar
+  konto_hinweis: laut API-Doku
+  eignung: 2
+  links:
+  - titel: API Eckwerte Beschäftigung
+    url: https://statistik.arbeitsagentur.de/DE/Statischer-Content/Service/API/API-BST.html
+  - titel: Kleinräumige Daten
+    url: https://statistik.arbeitsagentur.de/DE/Navigation/Service/akg/akg-Nav.html
+  beispiele:
+  - Sozialversicherungspflichtig Beschäftigte
+  - Arbeitslose und Quote auf Kreisebene
+  hinweise:
+  - Kleinräumige Daten nach Stadtteilen gibt es nur für Kommunen, auf Vertragsbasis und kostenpflichtig. Die Essener
+    Stadtstatistik bezieht sie; aggregierte Werte dort anfragen.
+  - Die inoffiziell dokumentierte Jobsuche-API ist für den Produktivbetrieb nicht zu empfehlen.
+
+- id: mastr
+  name: Marktstammdatenregister
+  kurz: Bundesnetzagentur
+  ebene: bund
+  themen: [energie]
+  beschreibung: Register aller Strom- und Gaserzeugungsanlagen und Speicher mit Standort. Zeigt etwa den PV-Zubau,
+    Batteriespeicher und BHKW in Essen.
+  zugang: [täglicher Gesamtexport (XML), SOAP-API]
+  lizenz: dl-de-by-2.0
+  lizenz_hinweis: 'DL-DE-BY-2.0; Pflichtangabe: Marktstammdatenregister, © Bundesnetzagentur, dl-de/by-2-0'
+  aktualitaet: täglich
+  konto: registrierung
+  konto_hinweis: Export ohne Konto, SOAP-API mit Key
+  eignung: 3
+  links:
+  - titel: Marktstammdatenregister
+    url: https://www.marktstammdatenregister.de/
+  beispiele:
+  - Photovoltaik nach Gemeinde und Inbetriebnahme
+  - Batteriespeicher
+  - BHKW und weitere Erzeuger
+  hinweise:
+  - Bis zu 100.000 Webdienst-Aufrufe pro Tag für registrierte Nutzer.
+  - Das Python-Paket open-mastr lädt den Gesamtexport in eine Datenbank. Danach nach Gemeindeschlüssel filtern.
+
+- id: vrr-gtfs
+  name: VRR-Sollfahrplan (GTFS)
+  kurz: OpenVRR · inkl. Ruhrbahn
+  ebene: mobilitaet
+  themen: [mobilitaet]
+  beschreibung: Verbundweiter Fahrplan als GTFS, ein monatliches Abbild im Beta-Status. Enthält Linien, Haltestellen
+    und Takt der Ruhrbahn.
+  zugang: [GTFS-ZIP]
+  lizenz: widerspruechlich
+  lizenz_hinweis: CC-BY laut VRR, „geschlossen“ laut Open.NRW
+  aktualitaet: monatlich
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 3
+  links:
+  - titel: OpenVRR-Datensätze
+    url: https://www.opendata-oepnv.de/ht/de/organisation/verkehrsverbuende/vrr/openvrr/datensaetze
+  - titel: Eintrag bei Open.NRW
+    url: https://open.nrw/dataset/soll-fahrplandaten-vrr-rvr
+  beispiele: [Linien und Haltestellen in Essen, Taktdichte je Haltestelle, Netzabdeckung]
+  hinweise:
+  - Vor kommerzieller Nutzung die Lizenz beim VRR schriftlich bestätigen lassen.
+  - Auch über opendata.ruhr verfügbar (CKAN-ID 496eea5d-d6ef-4dc2-aeb0-d15c4fbf3178).
+  kontakt: [openvrr@vrr.de]
+
+- id: vrr-efa
+  name: VRR-OpenService
+  kurz: EFA · TRIAS
+  ebene: mobilitaet
+  themen: [mobilitaet]
+  beschreibung: Abfahrtsmonitor, Verbindungsauskunft und Störungsmeldungen mit Echtzeitdaten für das gesamte VRR-Gebiet.
+    Derzeit die einzige offene Live-Quelle mit voller Abdeckung.
+  zugang: [EFA rapidJSON/XML, TRIAS]
+  lizenz: pruefen
+  lizenz_hinweis: Nutzungsvereinbarung API
+  aktualitaet: Echtzeit
+  konto: bedingt
+  konto_hinweis: ohne Konto für Test, Forschung, Hobby; Registrierung für öffentliche Anwendungen
+  eignung: 3
+  endpunkte:
+  - titel: Abfahrten an einer Haltestelle
+    url: https://openservice.vrr.de/openservice/XML_DM_REQUEST?outputFormat=rapidJSON&version=10.4.18.18&type_dm=stop&name_dm=<Haltestelle>&mode=direct
+  - titel: TRIAS-Testzugang
+    url: https://openservice-test.vrr.de/opendataT/trias
+  links:
+  - titel: API-Übersicht
+    url: https://www.opendata-oepnv.de/ht/de/api
+  - titel: Nutzungsvereinbarung
+    url: https://www.opendata-oepnv.de/ht/en/standards/nutzungsvereinbarung-api
+  beispiele: [Live-Abfahrten mit Verspätung, Störungsmeldungen, Verbindungen]
+  hinweise:
+  - Für Produktivbetrieb eine Projektbeschreibung an den VRR schicken und die Produktivserver mit Registrierung
+    nutzen.
+  - Zugangsdaten dürfen nicht weitergegeben werden. efa.vrr.de ist kein dokumentierter Open-Data-Endpunkt.
+  kontakt: [opendata-oepnv@vrr.de]
+
+- id: vrr-mip
+  name: VRR Infrastrukturplattform
+  kurz: MIP · Aufzugsstatus
+  ebene: mobilitaet
+  themen: [mobilitaet]
+  beschreibung: Status von Aufzügen und weiterer Haltestelleninfrastruktur im VRR. Nützlich für Dashboards zur Barrierefreiheit.
+  zugang: [REST (JSON)]
+  lizenz: cc-by-4.0
+  lizenz_hinweis: CC BY 4.0
+  aktualitaet: laufend
+  konto: oeffentlicher-schluessel
+  konto_hinweis: API-Key öffentlich genannt
+  eignung: 2
+  endpunkte:
+  - titel: Infrastruktur aller Haltestellen
+    url: https://mip.vrr.de/vrr-api/rest/stop/all/infrastructure
+  beispiele: [Aufzüge in Betrieb oder gestört]
+  hinweise:
+  - Den öffentlichen API-Key aus der Dokumentation des VRR übernehmen.
+
+- id: nextbike
+  name: nextbike Live-API
+  kurz: metropolradruhr
+  ebene: mobilitaet
+  themen: [mobilitaet]
+  beschreibung: Eigene Live-Schnittstelle des Betreibers mit Stationen und verfügbaren Rädern, alternativ GBFS-Feeds
+    je System.
+  zugang: [JSON, GBFS]
+  lizenz: pruefen
+  lizenz_hinweis: Bedingungen von nextbike
+  aktualitaet: Echtzeit
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 2
+  endpunkte:
+  - titel: Live-Daten einer Stadt
+    url: https://api.nextbike.net/maps/nextbike-live.json?city=<id>
+  - titel: GBFS je System (Muster)
+    url: https://gbfs.nextbike.net/maps/gbfs/v2/nextbike_<id>/gbfs.json
+  links:
+  - titel: Übersicht Shared Mobility
+    url: https://sharedmobility.github.io/Nextbike.html
+  beispiele: [Stationen und freie Räder]
+  hinweise:
+  - Die City- bzw. System-ID für Essen ist nicht geprüft.
+  - Für den Produktivbetrieb eher das NRW-Bündel auf mobilitaetsdaten.nrw nutzen.
+
+- id: gtfsde
+  name: gtfs.de Realtime
+  kurz: Drittanbieter
+  ebene: community
+  themen: [mobilitaet]
+  beschreibung: Deutschlandweiter GTFS-Realtime-Feed mit TripUpdates und ServiceAlerts, alle 10 Sekunden aktualisiert.
+  zugang: [GTFS-RT (Protobuf)]
+  lizenz: cc-by-sa-4.0
+  lizenz_hinweis: CC BY-SA 4.0
+  aktualitaet: alle 10 s
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 1
+  endpunkte:
+  - titel: Freier Feed
+    url: https://realtime.gtfs.de/realtime-free.pb
+  links:
+  - titel: gtfs.de Realtime
+    url: https://gtfs.de/en/realtime/
+  beispiele: [Verspätungen (TripUpdates), Störungen (ServiceAlerts)]
+  hinweise:
+  - Beta ohne Verfügbarkeitsgarantie. Im VRR sind die Busse unvollständig.
+  - Einen offiziellen offenen GTFS-RT von VRR oder Ruhrbahn gibt es derzeit nicht.
+
+- id: bunddev
+  name: bund.dev
+  kurz: Community-Dokumentation
+  ebene: community
+  themen: [luft, mobilitaet, wirtschaft]
+  beschreibung: OpenAPI-Beschreibungen und Clients für Schnittstellen von Bundesbehörden, etwa UBA-Luftqualität
+    oder Autobahn-API.
+  zugang: [OpenAPI-Specs]
+  lizenz: pruefen
+  lizenz_hinweis: abhängig von der Ursprungs-API
+  aktualitaet: nicht zutreffend
+  konto: ohne
+  konto_hinweis: ohne Konto
+  eignung: 1
+  links:
+  - titel: bund.dev
+    url: https://bund.dev/
+  hinweise:
+  - Keine Behörde. Stabilität und Nutzungsrechte hängen an der jeweiligen Ursprungs-API.
+
+- id: govdata
+  name: GovData.de
+  ebene: bund
+  themen: [verwaltung, geo]
+  beschreibung: Bundesweiter Datenkatalog
+  zugang: [CKAN-API]
+  lizenz: gemischt
+  lizenz_hinweis: Lizenz je Datensatz
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://www.govdata.de/
+  hinweise: [Lizenz je Datensatz]
+
+- id: regionalstatistik
+  name: Regionalstatistik.de
+  ebene: bund
+  themen: [bevoelkerung, wirtschaft]
+  beschreibung: Regionaldatenbank für Kreise und Gemeinden
+  zugang: ['GENESIS, R-Paket restatis']
+  lizenz: dl-de-by-2.0
+  lizenz_hinweis: Registrierung für API
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://www.regionalstatistik.de/
+  hinweise: [Registrierung für API]
+
+- id: bkg
+  name: Bundesamt für Kartographie und Geodäsie
+  kurz: BKG · basemap.de · Geodatenzentrum
+  ebene: bund
+  themen: [geo, wasser]
+  beschreibung: Hintergrundkarten (basemap.de), Verwaltungsgebiete und Fachdienste wie die Hinweiskarte Starkregengefahren.
+  zugang: [WMTS, WMS, Downloads]
+  lizenz: gemischt
+  lizenz_hinweis: basemap.de unter CC BY 4.0 („© GeoBasis-DE / BKG (Jahr) CC BY 4.0“); Starkregen-Hinweiskarte unter
+    DL-DE-BY-2.0 („© BKG (Jahr des letzten Datenbezugs) dl-de/by-2-0“)
+  aktualitaet: je Produkt
+  konto: ohne
+  eignung: 3
+  endpunkte:
+  - titel: basemap.de Web Raster grau (WMTS-Kacheln)
+    url: https://sgx.geodatenzentrum.de/wmts_basemapde/tile/1.0.0/de_basemapde_web_raster_grau/default/GLOBAL_WEBMERCATOR/{z}/{y}/{x}.png
+  links:
+  - titel: basemap.de
+    url: https://basemap.de/
+  - titel: Geodatenzentrum
+    url: https://gdz.bkg.bund.de/
+
+- id: zensus-2022
+  name: Zensus 2022
+  ebene: bund
+  themen: [bevoelkerung]
+  beschreibung: Zensusergebnisse, auch als Gitterdaten
+  zugang: ['GENESIS, R-Paket restatis']
+  lizenz: dl-de-by-2.0
+  lizenz_hinweis: Gitter erlaubt kleinräumige Karten
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://ergebnisse.zensus2022.de/
+  hinweise:
+  - Gitterdaten (100 m) unter DL-DE-BY-2.0.
+  - Ob es auf dem 100-m-Gitter einen Anteil der Menschen ab 65 Jahren gibt, ist ungeprüft.
+
+- id: dwd
+  name: Deutscher Wetterdienst – Open Data (Climate Data Center)
+  ebene: bund
+  themen: [klima]
+  beschreibung: Mess- und Klimadaten des DWD als Dateien, darunter die Station Essen-Bredeney mit Tageswerten seit
+    dem 19. Jahrhundert.
+  zugang: [Dateiserver]
+  lizenz: cc-by-4.0
+  lizenz_hinweis: CC BY 4.0, Quellenangabe Deutscher Wetterdienst
+  eignung: 3
+  links:
+  - titel: Website
+    url: https://opendata.dwd.de/
+  hinweise:
+  - Rohdaten als Text im ZIP; Fehlwerte sind mit -999 markiert.
+  - Die Stations-ID von Essen-Bredeney (01303) in der Stationsliste bestätigen.
+  kurz: opendata.dwd.de
+  aktualitaet: täglich
+  konto: ohne
+  endpunkte:
+  - titel: Tageswerte Klima (aktuell)
+    url: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/recent/
+  - titel: Tageswerte Klima (historisch)
+    url: https://opendata.dwd.de/climate_environment/CDC/observations_germany/climate/daily/kl/historical/
+
+- id: brightsky
+  name: Bright Sky
+  ebene: community
+  themen: [klima]
+  beschreibung: JSON-API auf Basis der DWD-Daten
+  zugang: [REST]
+  lizenz: pruefen
+  lizenz_hinweis: Community-Projekt
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://brightsky.dev/
+  hinweise: [Community-Projekt]
+
+- id: osm
+  name: OpenStreetMap
+  ebene: community
+  themen: [geo, mobilitaet, gruen]
+  beschreibung: Wege, Gebäude, Points of Interest
+  zugang: ['Overpass, Nominatim']
+  lizenz: odbl-1.0
+  lizenz_hinweis: ODbL; Namensnennung „© OpenStreetMap-Mitwirkende“
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://www.openstreetmap.org/
+  hinweise:
+  - ODbL, Namensnennung „© OpenStreetMap-Mitwirkende“
+
+- id: wikidata
+  name: Wikidata
+  ebene: community
+  themen: [geo, kultur]
+  beschreibung: Stadtteile, Orte, Personen, Bauwerke
+  zugang: [SPARQL]
+  lizenz: cc0-1.0
+  lizenz_hinweis: CC0
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://query.wikidata.org/
+  hinweise: [CC0]
+
+- id: sensor-community
+  name: Sensor.Community
+  ebene: community
+  themen: [luft]
+  beschreibung: Feinstaubsensoren von Bürgerinnen und Bürgern
+  zugang: [JSON-API]
+  lizenz: odbl-1.0
+  lizenz_hinweis: Messqualität schwankt
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://sensor.community/
+  hinweise: [Messqualität schwankt]
+
+- id: autobahn-api
+  name: Autobahn-API
+  ebene: bund
+  themen: [mobilitaet]
+  beschreibung: Baustellen und Sperrungen auf A40 und A52
+  zugang: [REST]
+  lizenz: pruefen
+  lizenz_hinweis: inoffiziell dokumentiert
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://autobahn.api.bund.dev/
+  hinweise: [inoffiziell dokumentiert]
+
+- id: db-api
+  name: DB API Marketplace
+  ebene: bund
+  themen: [mobilitaet]
+  beschreibung: Stationen und Fahrpläne der Bahn
+  zugang: [REST]
+  lizenz: nutzungsbedingungen
+  lizenz_hinweis: Registrierung
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://developers.deutschebahn.com/
+  hinweise: [Registrierung]
+
+- id: boris-nrw
+  name: BORIS.NRW
+  ebene: land
+  themen: [wirtschaft, geo]
+  beschreibung: Bodenrichtwerte
+  zugang: ['Webdienste, Download']
+  lizenz: pruefen
+  lizenz_hinweis: Lizenz prüfen
+  eignung: 2
+  links:
+  - titel: Website
+    url: https://www.boris.nrw.de/
+  hinweise: [Lizenz prüfen]
+
+- id: ladesaeulenregister
+  name: Ladesäulenregister
+  ebene: bund
+  themen: [energie, mobilitaet]
+  beschreibung: Öffentliche Ladepunkte (Bundesnetzagentur)
+  zugang: [Download]
+  lizenz: pruefen
+  lizenz_hinweis: Quelle bei der Bundesnetzagentur suchen
+  eignung: 2
+  hinweise: [Quelle bei der Bundesnetzagentur suchen, Primärquelle noch nicht ermittelt.]
+
+- id: pks-nrw
+  name: PKS NRW
+  ebene: land
+  themen: [verwaltung]
+  beschreibung: Polizeiliche Kriminalstatistik
+  zugang: ['Berichte, Tabellen']
+  lizenz: pruefen
+  lizenz_hinweis: Bezugsebene prüfen
+  eignung: 2
+  hinweise: [Bezugsebene prüfen, Primärquelle noch nicht ermittelt.]
+
+- id: opengeodata-nrw
+  name: OpenGeodata.NRW
+  kurz: Download-Plattform des Landes NRW
+  ebene: land
+  themen: [geo, klima, luft, laerm, wasser, gruen]
+  beschreibung: Dateiserver für die offenen Geodaten des Landes, unter anderem Geobasis NRW und LANUK. Jeder Ordner
+    hat eine Datei index.json mit Dateinamen, Größen und Zeitstempeln.
+  zugang: [Dateien (HTTPS), index.json je Ordner]
+  lizenz: gemischt
+  lizenz_hinweis: meist DL-DE-Zero-2.0, Geobasis teils DL-DE-BY-2.0; je Produkt prüfen
+  aktualitaet: je Produkt
+  konto: ohne
+  eignung: 3
+  endpunkte:
+  - titel: Produkte
+    url: https://www.opengeodata.nrw.de/produkte/
+  - titel: Beispiel index.json
+    url: https://www.opengeodata.nrw.de/produkte/umwelt_klima/klima/klimaanalyse/analyse-nacht/index.json
+  hinweise:
+  - Das Projekt löst Dateinamen über index.json auf, damit neue Dateistände automatisch gefunden werden.
+
+- id: krankenhausverzeichnis
+  name: Krankenhausverzeichnis
+  ebene: bund
+  themen: [bevoelkerung]
+  beschreibung: Krankenhäuser mit Fachabteilungen
+  zugang: [Download]
+  lizenz: pruefen
+  lizenz_hinweis: Quelle prüfen
+  eignung: 2
+  hinweise: [Quelle prüfen, Primärquelle noch nicht ermittelt.]
+
+luecken:
+- art: fehlt
+  titel: Parkhausbelegung in Echtzeit
+  text: Kein offener Feed für Essen gefunden. Köln und Münster veröffentlichen einen.
+  weg: Bei der Stadt und den Parkhausbetreibern anfragen.
+- art: fehlt
+  titel: Offizieller GTFS-Realtime-Feed
+  text: Weder VRR noch Ruhrbahn bieten einen offenen GTFS-RT an.
+  weg: Live-Abfahrten über den VRR-OpenService abrufen.
+- art: kostenpflichtig
+  titel: Arbeitsmarkt nach Stadtteilen
+  text: Kleinräumige BA-Daten gibt es nur für Kommunen auf Vertragsbasis.
+  weg: Aggregierte Werte bei der Essener Stadtstatistik anfragen.
+- art: geschützt
+  titel: KomMonitor-API
+  text: Die REST-Schnittstelle ist zugriffsgeschützt.
+  weg: Beim Amt für Geoinformation, Vermessung und Kataster anfragen.
+- art: ungeprüft
+  titel: OParl-Basis-URL des Essener RIS
+  text: Die Seite sperrt automatisierte Abrufe.
+  weg: URL über den Menüpunkt „Schnittstelle OParl“ im Browser ablesen.
+- art: ungeprüft
+  titel: System-ID von metropolradruhr
+  text: Für die nextbike-eigene API nicht bestätigt.
+  weg: Das NRW-Bündel auf mobilitaetsdaten.nrw nutzen oder die ID in nextbike-live.json suchen.
+- art: kein Beleg
+  titel: Ruhrbahn-eigene Daten, EBE-Abfuhrkalender, Mietspiegel- und Haushalts-Rohdaten
+  text: Keine Primärquelle gefunden. Das heißt nicht, dass es sie nicht gibt.
+  weg: Gezielt über „Daten anfragen“ anstoßen.

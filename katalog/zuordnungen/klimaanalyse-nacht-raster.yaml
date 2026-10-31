@@ -1,0 +1,27 @@
+# Klimaanalyse NRW 2026, Klimaanalysekarte Nacht: wie die acht Klassen im Raster stecken.
+#
+# Das ZIP enthält kein Klassenraster, sondern stetige Werte (float32, Fehlwert -999, 25 m):
+#   PL_KY_NACHT_LT_TYP/EXT    Lufttemperatur um 4 Uhr in °C, nur im Wirkraum (Siedlungsgebiet)
+#   PL_KY_NACHT_KVSD_TYP/EXT  Kaltluftvolumenstromdichte in m³/(s·m), nur im Ausgleichsraum
+#   PL_KY_NACHT_Stroemungsrichtung_*  Strömung, 2 Bänder, Gitter 100 bis 2000 m
+# Die Klassen entstehen aus der Temperatur nach Tabelle 1 der Methodik (äquidistant, 1,5 K):
+#   ≤14 | >14–15,5 | >15,5–17 | >17–18,5 | >18,5–20 | >20–21,5 | >21,5–23 | >23–24,5 °C
+# Farben der Anbieterlegende (WMS klimaanpassung_klimaanalyse, Ebene 29 „Lufttemperatur“):
+#   #abd9e9 #e0f3f8 #ffffbf #fee090 #fdae61 #f46d43 #d73027 #a50026
+
+datensatz: klimaanalyse-nacht-raster
+lesart: temperatur
+band: 1
+dateien:
+  extrem: PL_KY_NACHT_LT_EXT.tif
+  typisch: PL_KY_NACHT_LT_TYP.tif
+wirkraum: fehlwerte   # Zellen mit Wert = Wirkraum; Grün- und Freiflächen haben -999
+geprueft: true
+quelle: >-
+  Klimaanalyse_meta.zip: Methodik_Planung_Klimaanalyse_Karte_Nacht.pdf, Tabelle 1 (Klassengrenzen);
+  Read_Me_Nomenklatur_open_geodata_Klimaatlas.pdf (PL_KY_NACHT_LT_TYP/EXT: Lufttemperatur im Wirkraum, °C);
+  Legende des WMS https://www.wms.nrw.de/umwelt/klimaanpassung_klimaanalyse, Ebene 29 (GetLegendGraphic)
+vermerk: >-
+  2026-10-10: Grenzen und Farben mit Methodik-PDF und WMS-Legende abgeglichen. Im Stadtgebiet Essen
+  178.571 Zellen mit Wert (111,6 km²), TYP 12,54–20,04 °C, EXT 16,69–23,83 °C. LT und KVSD schließen sich
+  aus (138 Zellen Überschneidung). Mit dem Menschen abgestimmt; Standard-Szenario extrem.

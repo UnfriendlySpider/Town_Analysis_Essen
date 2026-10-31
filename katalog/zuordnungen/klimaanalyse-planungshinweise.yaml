@@ -1,0 +1,35 @@
+# Klimaanalyse NRW 2026, Planungshinweiskarte (LANUK): Handlungsprioritäten im Wirkraum (Layer PL_KY_PHK_HP).
+#
+# Jede Fläche trägt die Handlungspriorität als Text („Handlungspriorität 1“ … „6“) und den zusammengefassten
+# Planungshinweis als langen Text, der mit der Stufe beginnt („Dringender Handlungsbedarf: …“). Die Analyse prüft,
+# dass beide zur Zuordnung passen, und bricht sonst ab (E-009).
+
+datensatz: klimaanalyse-planungshinweise
+geprueft: true
+quelle: >-
+  Methodik_Planung_Klimaanalyse_Planungshinweiskarte.pdf (LANUK, Stand 03/2026, im Datensatz
+  klimaanalyse-beschreibung), Abschnitt „Handlungsprioritäten im Wirkraum“: „Handlungspriorität 1 + 2 = Dringender
+  Handlungsbedarf“, „3 + 4 = Erweiterter Handlungsbedarf“, „5 = Mäßiger Handlungsbedarf“, „6 = Kein
+  Handlungsbedarf“; Grundlage ist die nächtliche Überwärmung beider Szenarien (Tabelle 1).
+vermerk: >-
+  2026-10-12: Kreuztabelle Handlungspriorität × Planungshinweis über alle 5.631 Flächen mit GN = 'Essen' ohne
+  Abweichung; in Essen kommen die Prioritäten 1 bis 5 vor, 6 nicht. Einwohnerzahl der Flächen zusammen 570.764
+  (Zensus 2022: 570.632).
+
+layer: PL_KY_PHK_HP
+feld: Handlungspriorität
+textfeld: Planungshinweis
+gemeindefeld: GN
+gemeinde: Essen
+klassen:
+  1: {text: "Handlungspriorität 1", stufe: dringend}
+  2: {text: "Handlungspriorität 2", stufe: dringend}
+  3: {text: "Handlungspriorität 3", stufe: erweitert}
+  4: {text: "Handlungspriorität 4", stufe: erweitert}
+  5: {text: "Handlungspriorität 5", stufe: maessig}
+  6: {text: "Handlungspriorität 6", stufe: kein}
+stufen:
+  dringend: {anfang: "Dringender Handlungsbedarf", titel: "dringender Handlungsbedarf"}
+  erweitert: {anfang: "Erweiterter Handlungsbedarf", titel: "erweiterter Handlungsbedarf"}
+  maessig: {anfang: "Mäßiger Handlungsbedarf", titel: "mäßiger Handlungsbedarf"}
+  kein: {anfang: "Kein Handlungsbedarf", titel: "kein Handlungsbedarf"}

@@ -1,0 +1,122 @@
+# Lizenzen, auf die sich Quellen und Datensätze beziehen.
+#
+# namensnennung        Bei Weitergabe oder Veröffentlichung müssen Quelle und Lizenz genannt werden.
+# kommerziell          Kommerzielle Nutzung ist erlaubt.
+# bearbeitung          Veränderte Daten dürfen weitergegeben werden.
+# gleiche_bedingungen  Abgeleitete Daten müssen unter derselben Lizenz stehen.
+# pruefen              Die Rechte sind nicht klar. Vor jeder Weitergabe klären.
+#
+# Für das private Projekt auf dem eigenen Rechner gilt keine dieser Pflichten. Sie greifen,
+# sobald Ergebnisse geteilt oder veröffentlicht werden. Siehe Skill lizenz-pruefen.
+
+dl-de-zero-2.0:
+  name: Datenlizenz Deutschland – Zero – Version 2.0
+  kurz: DL-DE Zero 2.0
+  url: https://www.govdata.de/dl-de/zero-2-0
+  namensnennung: false
+  kommerziell: true
+  bearbeitung: true
+  gleiche_bedingungen: false
+  hinweis: Jede Nutzung ohne Bedingungen erlaubt. Eine Quellenangabe ist freiwillig, aber üblich.
+
+dl-de-by-2.0:
+  name: Datenlizenz Deutschland – Namensnennung – Version 2.0
+  kurz: DL-DE BY 2.0
+  url: https://www.govdata.de/dl-de/by-2-0
+  namensnennung: true
+  kommerziell: true
+  bearbeitung: true
+  gleiche_bedingungen: false
+  hinweis: >-
+    Zu nennen sind der Bereitsteller, der Lizenzname mit Link und ein Verweis auf den Datensatz.
+    Veränderte Daten sind als „Daten geändert“ zu kennzeichnen.
+
+cc-by-4.0:
+  name: Creative Commons Namensnennung 4.0 International
+  kurz: CC BY 4.0
+  url: https://creativecommons.org/licenses/by/4.0/
+  namensnennung: true
+  kommerziell: true
+  bearbeitung: true
+  gleiche_bedingungen: false
+  hinweis: Urheber, Lizenz mit Link und Hinweis auf Änderungen nennen.
+
+cc-by-sa-4.0:
+  name: Creative Commons Namensnennung – Weitergabe unter gleichen Bedingungen 4.0 International
+  kurz: CC BY-SA 4.0
+  url: https://creativecommons.org/licenses/by-sa/4.0/
+  namensnennung: true
+  kommerziell: true
+  bearbeitung: true
+  gleiche_bedingungen: true
+  hinweis: Wie CC BY, abgeleitete Daten müssen zusätzlich unter CC BY-SA stehen.
+
+cc-by-nc-4.0:
+  name: Creative Commons Namensnennung – Nicht kommerziell 4.0 International
+  kurz: CC BY-NC 4.0
+  url: https://creativecommons.org/licenses/by-nc/4.0/
+  namensnennung: true
+  kommerziell: false
+  bearbeitung: true
+  gleiche_bedingungen: false
+  hinweis: Nur nicht kommerzielle Nutzung. Für ein privates Projekt in Ordnung, vor einer Veröffentlichung mit Werbung oder Bezahlung klären.
+
+odbl-1.0:
+  name: Open Data Commons Open Database License 1.0
+  kurz: ODbL 1.0
+  url: https://opendatacommons.org/licenses/odbl/1-0/
+  namensnennung: true
+  kommerziell: true
+  bearbeitung: true
+  gleiche_bedingungen: true
+  hinweis: Namensnennung (bei OpenStreetMap „© OpenStreetMap-Mitwirkende“). Abgeleitete Datenbanken unter ODbL weitergeben.
+
+cc0-1.0:
+  name: Creative Commons Zero 1.0 Universell
+  kurz: CC0 1.0
+  url: https://creativecommons.org/publicdomain/zero/1.0/
+  namensnennung: false
+  kommerziell: true
+  bearbeitung: true
+  gleiche_bedingungen: false
+  hinweis: Gemeinfrei, keine Bedingungen.
+
+nutzungsbedingungen:
+  name: Nutzungsbedingungen des Anbieters
+  kurz: Anbieterbedingungen
+  namensnennung: true
+  kommerziell: false
+  bearbeitung: false
+  gleiche_bedingungen: false
+  pruefen: true
+  hinweis: Keine offene Lizenz, sondern eigene Bedingungen des Anbieters (z. B. API-Nutzungsvereinbarung). Vor einer Weitergabe lesen.
+
+gemischt:
+  name: je Datensatz unterschiedlich
+  kurz: je Datensatz
+  namensnennung: true
+  kommerziell: false
+  bearbeitung: false
+  gleiche_bedingungen: false
+  pruefen: true
+  hinweis: Portal mit verschiedenen Lizenzen. Die Lizenz steht beim einzelnen Datensatz oder in dessen Ressourcen.
+
+pruefen:
+  name: Lizenz nicht ausgewiesen
+  kurz: prüfen
+  namensnennung: true
+  kommerziell: false
+  bearbeitung: false
+  gleiche_bedingungen: false
+  pruefen: true
+  hinweis: Keine Lizenz angegeben oder an Bedingungen gebunden. Privat nutzbar; vor jeder Weitergabe beim Anbieter klären.
+
+widerspruechlich:
+  name: widersprüchliche Angaben
+  kurz: widersprüchlich
+  namensnennung: true
+  kommerziell: false
+  bearbeitung: false
+  gleiche_bedingungen: false
+  pruefen: true
+  hinweis: Verschiedene Portale nennen verschiedene Lizenzen. Beim Anbieter schriftlich bestätigen lassen.

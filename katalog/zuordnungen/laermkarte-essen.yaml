@@ -1,0 +1,49 @@
+# Lärmkarte Essen (Stadt Essen, Umgebungslärm): welche Datei je Quelle und Zeitraum, welches Feld den Pegel trägt.
+#
+# Die Dateien sind unterschiedlich aufgebaut (inspiziert am 10.10.2026):
+#   Straßen, DB:       verschachtelte Flächen. Jede Stufe liegt zu 100 % in der nächstniedrigeren, eine Fläche
+#                      heißt also „mindestens X dB(A)“. DB schreibt die Untergrenze als X,01 (über X).
+#   Ruhrbahn:          getrennte Bänder mit Untergrenze ISOV1 und Obergrenze ISOV2.
+#   IED-Anlagen:       getrennte Bänder (Überschneidung unter 2 %) mit einem Wert WERT, gleiches Schema wie die
+#                      Straßendateien (DK_ISOTYP, WERTMIN, MODI). Dass WERT die Untergrenze ist, folgt aus diesem
+#                      gleichen Schema, nicht aus einer Legende des Anbieters.
+# Die Analyse nimmt je Datei alle Flächen mit Untergrenze (abgerundet) ab der Schwelle und vereinigt sie. Das
+# funktioniert für verschachtelte Flächen und für Bänder gleich.
+
+datensatz: laermkarte-essen
+geprueft: true
+quelle: >-
+  Dateien selbst (Feldnamen, Wertebereiche, Lage der Stufen zueinander), Metadaten der Shapes (.shp.xml mit Titeln wie
+  SDE_V_LAERM_2016.Ruhrbahn_Lnight, IED_Anlagen_Lden__24h_), Ressourcenliste im Portal (package_show lärmkarte-essen)
+vermerk: >-
+  2026-10-10: Lage der Stufen geprüft: Straßen und DB verschachtelt (je Stufe 100 % in der darunter), Ruhrbahn und
+  IED-Anlagen überschneidungsfrei. Straßen ganztags hat unter 55 dB(A) nur 29 ha (Rechengebiet beginnt praktisch bei
+  55); Schwellen ab 55 dB(A) sind in allen acht Dateien vollständig. IED: Lesart von WERT als Untergrenze nur aus
+  dem gleichen Schema wie Straßen abgeleitet.
+
+quellen:
+  strasse:
+    titel: Straßenverkehr
+    stand: 2011
+    feld: WERT
+    nacht: Laerm_Strassen_Nacht_2011.shp
+    ganztags: Laerm_Strassen_24h_2011.shp
+  schiene_db:
+    titel: Eisenbahn (DB)
+    stand: 2016
+    feld: KLASSE
+    nacht: Laerm_DB_Nacht_2016.shp
+    ganztags: Laerm_DB_24h_2016.shp
+  ruhrbahn:
+    titel: Straßen- und Stadtbahn (Ruhrbahn)
+    stand: 2016
+    feld: ISOV1
+    nacht: Laerm_Ruhrbahn_Nacht_2016.shp
+    ganztags: Laerm_Ruhrbahn_24h_2016.shp
+  industrie:
+    titel: Industrieanlagen (IED)
+    stand: 2016
+    feld: WERT
+    lesart_abgeleitet: true
+    nacht: Laerm_IED_Anlagen_Nacht_2016.shp
+    ganztags: Laerm_IED_Anlagen_24h_2016.shp

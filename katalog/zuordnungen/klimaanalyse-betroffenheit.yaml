@@ -1,0 +1,30 @@
+# Klimaanalyse NRW 2026, Betroffenheitsanalyse (LANUK): Layer und Bedeutung von senstvt.
+#
+# Laut Methodik-Papier (Methodik_Planung_Klimaanalyse_Betroffenheitsanalyse1.pdf, Stand 03/2026):
+#   Einzelsensitivitäten je Gemeinde in Dezile: Klasse 8 sensitiv, 9 hoch sensitiv, 10 extrem sensitiv.
+#   Gesamtbetrachtung: sensitiv = Hochaltrige 8–10 ODER Kinder 10 ODER Nettokaltmiete 10;
+#   hoch sensitiv = Hochaltrige 8–10 UND (Kinder 10 ODER Miete 10); extrem = alle drei.
+#   _komplett: ganzer Wirkraum (Baublöcke); _HP: nur Baublöcke mit Handlungspriorität 1 + 2 der
+#   Planungshinweiskarte (dringender Handlungsbedarf wegen Hitze).
+
+datensatz: klimaanalyse-betroffenheit
+geprueft: true
+quelle: >-
+  Methodik-Papier „Planung und Bau: Klimaanalyse NRW 2026 – Betroffenheitsanalyse“ (LANUK, 03/2026), Abschnitt
+  Datenbasis und Kartenerstellung; Textfeld Betroffenheit in der Datei
+vermerk: >-
+  2026-10-11: senstvt und Betroffenheit in Essen ohne Widerspruch (1 nicht sensitiv 9.168 Blöcke, 2 sensitiv 1.423,
+  3 hoch sensitiv 581, 4 extrem sensitiv 8 im Layer _komplett). Beide Layer überschneidungsfrei; _HP (3.888,1 ha)
+  liegt vollständig in _komplett (9.117,4 ha). Hochaltrige 2/3/4 entsprechen Dezil 8/9/10 (je 473 Blöcke).
+
+gemeinde: Essen          # Feld gemeind; Dezile gelten je Gemeinde
+layer_wirkraum: PL_KY_BTA_Gesamtbetrachtung_komplett
+layer_handlungsbedarf: PL_KY_BTA_Gesamtbetrachtung_HP
+feld: senstvt
+textfeld: Betroffenheit
+klassen:
+  1: {text: "nicht sensitiv"}
+  2: {text: "sensitiv"}
+  3: {text: "hoch sensitiv"}
+  4: {text: "extrem sensitiv"}
+ab_klasse: 2             # ab „sensitiv“
